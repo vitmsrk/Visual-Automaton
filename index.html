@@ -6,7 +6,9 @@
     <link rel="stylesheet" href="assets/css/app.css">
 </head>
 <body ng-app="VisualAutomatonApp">
-	<input type="button" ng-click="click()" value="Button"/>
+	<input type="button" ng-click="getTranslation('en')" value="EN"/>
+	<input type="button" ng-click="getTranslation('uk')" value="UK" />
+	<f1>{{translation.HELLO}}</f1>
 
     <script src="assets/libs/angular.min.js"></script>
     <script src="assets/libs/angular-animate.min.js"></script>
