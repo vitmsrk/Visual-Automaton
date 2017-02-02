@@ -2,7 +2,8 @@
 	'use strict';
 
 	angular.module('VisualAutomatonApp', ['ngMaterial', 'ngResource', 'ngCookies'])
-		.run(['$rootScope', '$cookies', '$resource', run]);
+		.run(['$rootScope', '$cookies', '$resource', run])
+		.config(['$mdThemingProvider', config]);
 
 	const DEFAULT_TRANSLATION = 'en';
 
@@ -16,5 +17,15 @@
 			});
 			$cookies.put('VISUAL_AUTOMATON_TRANSLATION', translation);
 		})();
+	}
+
+	function config($mdThemingProvider) {
+		$mdThemingProvider.theme('default')
+			.primaryPalette('blue-grey', {
+				'default': '800',
+				'hue-1': '100',
+				'hue-2': '300',
+				'hue-3': '600'
+			});
 	}
 })();

@@ -1,0 +1,7 @@
+﻿#top-bar {
+	min-height: 41px;
+}
+
+#top-bar .md-toolbar-tools {
+	height: 41px;
+}
