@@ -13,8 +13,8 @@
 		}
 	}
 
-	function canvasBoxCtrl($scope, $rootScope) {
-
+	function canvasBoxCtrl($scope, $rootScope, canvasSrvc) {
+		canvasSrvc.drawState();
 	}
 
 })(angular.module('VisualAutomatonApp'));
