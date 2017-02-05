@@ -8,14 +8,15 @@
 	const DEFAULT_TRANSLATION = 'en';
 
 	function run($rootScope, $cookies, $resource) {
-		($rootScope.getTranslation = function (translation) {
+		($rootScope.getTranslation = function (code) {
 			var path = '/assets/resources/';
-			if (!translation)
-				translation = $cookies.get('VISUAL_AUTOMATON_TRANSLATION') || DEFAULT_TRANSLATION;
-			$resource(path + translation + '.json').get(function (data) {
+			if (!code)
+				code = $cookies.get('VISUAL_AUTOMATON_TRANSLATION') || DEFAULT_TRANSLATION;
+			$resource(path + code + '.json').get(function (data) {
 				$rootScope.translation = data;
 			});
-			$cookies.put('VISUAL_AUTOMATON_TRANSLATION', translation);
+			$cookies.put('VISUAL_AUTOMATON_TRANSLATION', code);
+			$rootScope.currentTranslation = code;
 		})();
 	}
 
