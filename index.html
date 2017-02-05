@@ -6,6 +6,7 @@
     <link rel="stylesheet" href="assets/css/app.css">
 	<link rel="stylesheet" href="app/components/topBar/topBar.css" />
 	<link rel="stylesheet" href="app/components/leftNav/leftNav.css" />
+	<link rel="stylesheet" href="app/components/canvasBox/canvasBox.css" />
 </head>
 <body ng-app="VisualAutomatonApp" ng-cloak>
 	<top-bar></top-bar>
@@ -13,8 +14,8 @@
 	<section layout="row" flex id="layout">
 		<left-nav></left-nav>
 
-		<md-content flex layout-padding>
-			<p>assdfsdfsdfs</p>
+		<md-content flex>
+			<canvas-box></canvas-box>
 		</md-content>
 	</section>
 
@@ -29,5 +30,6 @@
     <script src="app/app.routes.js"></script>
 	<script src="app/components/topBar/topBar.directive.js"></script>
 	<script src="app/components/leftNav/leftNav.directive.js"></script>
+	<script src="app/components/canvasBox/canvasBox.directive.js"></script>
 </body>
 </html>
