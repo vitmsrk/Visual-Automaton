@@ -1,1 +1,21 @@
-//css
+html {
+	font-family: 'Ubuntu light', Calibri, 'Trebuchet MS', sans-serif;
+}
+
+body {
+	min-width: 1120px;
+	min-height: 720px;
+}
+
+.non-selectable {
+	-webkit-touch-callout: none;
+	-webkit-user-select: none;
+	-moz-user-select: none;
+	-ms-user-select: none;
+	user-select: none;
+	cursor: default;
+}
+
+#layout {
+	height: calc(100% - 41px);
+}

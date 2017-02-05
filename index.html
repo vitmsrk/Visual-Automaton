@@ -1,12 +1,23 @@
-﻿<!doctype html>
+﻿<!DOCTYPE html>
 <html>
 <head>
     <meta charset="utf-8">
     <link rel="stylesheet" href="assets/libs/angular-material.min.css">
     <link rel="stylesheet" href="assets/css/app.css">
+	<link rel="stylesheet" href="app/components/topBar/topBar.css" />
+	<link rel="stylesheet" href="app/components/leftNav/leftNav.css" />
+	<link rel="stylesheet" href="app/components/canvasBox/canvasBox.css" />
 </head>
-<body ng-app="VisualAutomatonApp">
-	<input type="button" ng-click="click()" value="Button"/>
+<body ng-app="VisualAutomatonApp" ng-cloak>
+	<top-bar></top-bar>
+
+	<section layout="row" flex id="layout">
+		<left-nav></left-nav>
+
+		<md-content flex>
+			<canvas-box></canvas-box>
+		</md-content>
+	</section>
 
     <script src="assets/libs/angular.min.js"></script>
     <script src="assets/libs/angular-animate.min.js"></script>
@@ -17,5 +28,8 @@
 	<script src="assets/libs/angular-resource.min.js"></script>
     <script src="app/app.module.js"></script>
     <script src="app/app.routes.js"></script>
+	<script src="app/components/topBar/topBar.directive.js"></script>
+	<script src="app/components/leftNav/leftNav.directive.js"></script>
+	<script src="app/components/canvasBox/canvasBox.directive.js"></script>
 </body>
 </html>

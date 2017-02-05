@@ -2,11 +2,31 @@
 	'use strict';
 
 	angular.module('VisualAutomatonApp', ['ngMaterial', 'ngResource', 'ngCookies'])
-		.run(['$rootScope', '$cookies', run]);
+		.run(['$rootScope', '$cookies', '$resource', run])
+		.config(['$mdThemingProvider', config]);
 
-	function run($rootScope, $cookies) {
-		$rootScope.click = function () {
-			console.log('sfsdfg');
-		};
+	const DEFAULT_TRANSLATION = 'en';
+
+	function run($rootScope, $cookies, $resource) {
+		($rootScope.getTranslation = function (code) {
+			var path = '/assets/resources/';
+			if (!code)
+				code = $cookies.get('VISUAL_AUTOMATON_TRANSLATION') || DEFAULT_TRANSLATION;
+			$resource(path + code + '.json').get(function (data) {
+				$rootScope.translation = data;
+			});
+			$cookies.put('VISUAL_AUTOMATON_TRANSLATION', code);
+			$rootScope.currentTranslation = code;
+		})();
+	}
+
+	function config($mdThemingProvider) {
+		$mdThemingProvider.theme('default')
+			.primaryPalette('blue-grey', {
+				'default': '800',
+				'hue-1': '100',
+				'hue-2': '300',
+				'hue-3': '600'
+			});
 	}
 })();
