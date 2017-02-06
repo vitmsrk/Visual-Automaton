@@ -18,6 +18,11 @@
 			$cookies.put('VISUAL_AUTOMATON_TRANSLATION', code);
 			$rootScope.currentTranslation = code;
 		})();
+
+		$rootScope.preferences = {
+			defaultStateColor: '#8f9ca2',
+			stateRadius: 20
+		};
 	}
 
 	function config($mdThemingProvider) {
