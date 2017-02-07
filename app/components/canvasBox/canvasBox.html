@@ -1,8 +1,26 @@
 ﻿<div id="canvas-box">
+	<md-tabs md-border-bottom md-autoselect>
+		<md-tab ng-repeat="tab in tabs" label="Tab {{$index + 1}}">
+			<svg class="canvas" ng-dblclick="drawState($event)">
+				
+			</svg>
+		</md-tab>
+	</md-tabs>
 	<md-toolbar class="md-primary md-hue-1" md-whiteframe="2">
 		<div class="md-toolbar-tools">
 			<span md-truncate flex class="md-hue-1"></span>
 		</div>
 	</md-toolbar>
-	<svg id="canvas" ng-dblclick="drawState($event)"></svg>
+	<svg ng-hide="true">
+		<filter id="dropshadow">
+			<feGaussianBlur in="SourceAlpha" stdDeviation="2.2" />
+			<feOffset dx="-2" dy="2" result="offsetblur" />
+			<feFlood flood-color="rgba(0,0,0,0.3)" />
+			<feComposite in2="offsetblur" operator="in" />
+			<feMerge>
+				<feMergeNode />
+				<feMergeNode in="SourceGraphic" />
+			</feMerge>
+		</filter>
+	</svg>
 </div>

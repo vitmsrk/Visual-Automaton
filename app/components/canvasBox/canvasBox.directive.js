@@ -32,6 +32,23 @@
 			circle.draggable();
 			document.getElementById('canvas').appendChild($compile(circle)($scope)[0]);
 		};
+
+        var selected = null,
+        previous = null;
+        $scope.tabs = [{}, {}, {}];
+		$scope.selectedIndex = 2;
+		$scope.$watch('selectedIndex', function (current, old) {
+			previous = selected;
+			selected = $scope.tabs[current];
+		});
+		$scope.addTab = function (title, view) {
+			view = view || title + " Content View";
+			$scope.tabs.push({ title: title, content: view, disabled: false });
+		};
+		$scope.removeTab = function (tab) {
+			var index = $scope.tabs.indexOf(tab);
+			$scope.tabs.splice(index, 1);
+		};
 	}
 
 })(angular.module('VisualAutomatonApp'));
