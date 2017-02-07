@@ -7,13 +7,44 @@
 	height: calc(100% + 8px);
 }
 
+#canvas-box svg.svg-filter {
+	width: 0;
+	height: 0;
+	position: absolute;
+}
+
 #canvas-box md-tabs md-tabs-canvas,
 #canvas-box md-tabs md-tabs-canvas md-pagination-wrapper {
 	height: 32px;
 }
 
 #canvas-box md-tabs md-tab-item {
-	padding: 5px 24px;
+	padding: 5px 5px 5px 24px;
+}
+
+#canvas-box md-tabs md-tab-item:nth-last-child(2) {
+	font-size: 22px;
+	color: rgb(55,71,79);
+	padding: 3px 0;
+	pointer-events: auto;
+}
+
+#canvas-box md-tabs md-tab-item .add-tab {
+	padding: 0 15px;
+	cursor: pointer;
+}
+
+#canvas-box md-tabs md-tab-item .remove-tab {
+	cursor: pointer;
+	font-size: 10px;
+	position: relative;
+	bottom: 1px;
+	opacity: 0;
+	transition: opacity 0.3s;
+}
+
+#canvas-box md-tabs md-tab-item:hover .remove-tab {
+	opacity: 1;
 }
 
 #canvas-box md-tabs md-tab-content {

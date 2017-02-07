@@ -13,41 +13,32 @@
 		}
 	}
 
-	function canvasBoxCtrl($scope, $rootScope, $compile) {
+	function canvasBoxCtrl($scope, $compile) {
 		const src = 'http://www.w3.org/2000/svg';
 
-		$scope.preferences = $rootScope.preferences;
+		$scope.tabsCount = 1;
+		$scope.tabs = [{ id: 'tab-1', index: 1}];
 
-		$scope.drawState = function (event) {
-			console.log(event);
+		$scope.addTab = function () {
+			$scope.tabs.push({ id: 'tab-' + ++$scope.tabsCount, index: $scope.tabsCount });
+		};
+
+		$scope.removeTab = function (tab) {
+			$scope.tabs.splice($scope.tabs.indexOf(tab), 1);
+		};
+
+		$scope.drawState = function (event, id) {
 			var attrs = {
 				fill: '{{preferences.defaultStateColor}}',
 				cx: event.offsetX,
 				cy: event.offsetY,
 				r: '{{preferences.stateRadius}}'
 			};
-			var circle = document.createElementNS(src, "circle");
+			var circle = document.createElementNS(src, 'circle');
 			circle.setAttributes(attrs);
 			circle.classList.add('state');
 			circle.draggable();
-			document.getElementById('canvas').appendChild($compile(circle)($scope)[0]);
-		};
-
-        var selected = null,
-        previous = null;
-        $scope.tabs = [{}, {}, {}];
-		$scope.selectedIndex = 2;
-		$scope.$watch('selectedIndex', function (current, old) {
-			previous = selected;
-			selected = $scope.tabs[current];
-		});
-		$scope.addTab = function (title, view) {
-			view = view || title + " Content View";
-			$scope.tabs.push({ title: title, content: view, disabled: false });
-		};
-		$scope.removeTab = function (tab) {
-			var index = $scope.tabs.indexOf(tab);
-			$scope.tabs.splice(index, 1);
+			document.getElementById(id).appendChild($compile(circle)($scope)[0]);
 		};
 	}
 

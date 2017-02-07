@@ -1,9 +1,18 @@
 ﻿<div id="canvas-box">
 	<md-tabs md-border-bottom md-autoselect>
-		<md-tab ng-repeat="tab in tabs" label="Tab {{$index + 1}}">
-			<svg class="canvas" ng-dblclick="drawState($event)">
-				
-			</svg>
+		<md-tab ng-repeat="tab in tabs">
+			<md-tab-label>
+				{{tab.title || translation.NEW_TAB + (tab.index != 1 ? ' ' + tab.index : '')}}&nbsp;&nbsp;
+				<span class="remove-tab non-selectable" ng-click="removeTab(tab)" title="{{translation.CLOSE_TAB}}">✖</span>
+			</md-tab-label>
+			<md-tab-body>
+				<svg class="canvas" id="{{tab.id}}" ng-dblclick="drawState($event, tab.id)"></svg>
+			</md-tab-body>
+		</md-tab>
+		<md-tab ng-click="addTab()" ng-disabled="true">
+			<md-tab-label>
+				<span class="add-tab non-selectable" title="{{translation.NEW_TAB}}">+</span>
+			</md-tab-label>
 		</md-tab>
 	</md-tabs>
 	<md-toolbar class="md-primary md-hue-1" md-whiteframe="2">
@@ -11,7 +20,7 @@
 			<span md-truncate flex class="md-hue-1"></span>
 		</div>
 	</md-toolbar>
-	<svg ng-hide="true">
+	<svg class="svg-filter">
 		<filter id="dropshadow">
 			<feGaussianBlur in="SourceAlpha" stdDeviation="2.2" />
 			<feOffset dx="-2" dy="2" result="offsetblur" />
