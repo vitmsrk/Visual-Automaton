@@ -21,7 +21,8 @@
 
 		$rootScope.preferences = {
 			defaultStateColor: '#8f9ca2',
-			stateRadius: 20
+			stateRadius: 25,
+			stateNamePrefix: 'q'
 		};
 	}
 
