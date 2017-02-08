@@ -15,6 +15,7 @@
 
 	function canvasBoxCtrl($scope, $compile) {
 		const src = 'http://www.w3.org/2000/svg';
+		const xlink = 'http://www.w3.org/1999/xlink';
 
 		$scope.scale = 1.0;
 		$scope.tabsCount = 1;
@@ -40,14 +41,10 @@
 
 			var text = document.createElementNS(src, 'text');
 			text.innerHTML = state.name;
-			text.setAttributes({
-				'class': 'non-selectable'
-			});
+			text.setAttributes({ 'class': 'non-selectable' });
 
 			var g = document.createElementNS(src, 'g');
-			g.setAttributes({
-				'id': state.id + '-' + 'def'
-			});
+			g.setAttributes({ 'id': state.id + '-' + 'def' });
 			g.appendChild($compile(circle)($scope)[0]);
 			g.appendChild($compile(text)($scope)[0]);
 
@@ -55,12 +52,13 @@
 			defs.appendChild($compile(g)($scope)[0]);
 			
 			var use = document.createElementNS(src, 'use');
+			use.setAttributeNS(xlink, 'href', '#' + g.getAttribute('id'));
 			use.setAttributes({
 				'x': event.offsetX / $scope.scale,
 				'y': event.offsetY / $scope.scale,
-				'xlink:href': '#' + g.getAttribute('id'),
 				'class': 'state'
 			});
+			use.draggable();
 
 			var canvas = document.getElementById(tab.id);
 			canvas.appendChild($compile(defs)($scope)[0]);
@@ -97,8 +95,8 @@
 			});
 
 			function mouseMove(event) {
-				that.setAttribute('cx', that.cx.animVal.value + event.movementX / $scope.scale);
-				that.setAttribute('cy', that.cy.animVal.value + event.movementY / $scope.scale);
+				that.setAttribute('x', that.x.animVal.value + event.movementX / $scope.scale);
+				that.setAttribute('y', that.y.animVal.value + event.movementY / $scope.scale);
 				for (var i in targets) {
 					targets[i].setAttribute('x', targets[0].x.animVal[0].value + event.movementX / $scope.scale);
 					targets[i].setAttribute('y', targets[0].y.animVal[0].value + event.movementY / $scope.scale);
