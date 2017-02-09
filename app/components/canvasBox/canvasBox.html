@@ -19,8 +19,8 @@
 		<div class="md-toolbar-tools">
 			<span md-truncate flex class="md-hue-1"></span>
 			<md-slider-container>
-				<span class="non-selectable">{{tabs[current].scale}}</span>
-				<md-slider flex step="0.01" min="0.5" max="2.0" ng-model="tabs[current].scale" aria-label="scale" id="scale-slider"></md-slider>
+				<span id="scale-value" class="non-selectable" title="{{translation.SCALE}}">{{tabs[current].scale * 100 | number: 0}}%</span>
+				<md-slider flex id="scale-slider" step="0.1" min="0.5" max="2.0" ng-model="tabs[current].scale" aria-label="scale"></md-slider>
 			</md-slider-container>
 		</div>
 	</md-toolbar>

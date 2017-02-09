@@ -35,7 +35,7 @@
 			var circle = document.createElementNS(src, 'circle');
 			circle.setAttributes({
 				'ng-attr-fill': '{{preferences.defaultStateColor}}',
-				'ng-attr-r': '{{preferences.stateRadius}}',
+				'ng-attr-r': '{{preferences.stateRadius}}'
 			});
 
 			var text = document.createElementNS(src, 'text');
@@ -58,10 +58,10 @@
 			var use = document.createElementNS(src, 'use');
 			use.setAttributeNS(xlink, 'href', '#' + g.getAttribute('id'));
 			use.setAttributes({
-				'x': event.offsetX / $scope.scale,
-				'y': event.offsetY / $scope.scale,
+				'x': event.offsetX / $scope.tabs[$scope.current].scale,
+				'y': event.offsetY / $scope.tabs[$scope.current].scale,
 				'class': 'state',
-				'ng-attr-transform': 'scale({{tab.scale}})'
+				'ng-attr-transform': 'scale({{tabs[current].scale}})'
 			});
 			use.draggable();
 
@@ -101,11 +101,11 @@
 			});
 
 			function mouseMove(event) {
-				that.setAttribute('x', that.x.animVal.value + event.movementX / $scope.scale);
-				that.setAttribute('y', that.y.animVal.value + event.movementY / $scope.scale);
+				that.setAttribute('x', that.x.animVal.value + event.movementX / $scope.tabs[$scope.current].scale);
+				that.setAttribute('y', that.y.animVal.value + event.movementY / $scope.tabs[$scope.current].scale);
 				for (var i in targets) {
-					targets[i].setAttribute('x', targets[0].x.animVal[0].value + event.movementX / $scope.scale);
-					targets[i].setAttribute('y', targets[0].y.animVal[0].value + event.movementY / $scope.scale);
+					targets[i].setAttribute('x', targets[0].x.animVal[0].value + event.movementX / $scope.tabs[$scope.current].scale);
+					targets[i].setAttribute('y', targets[0].y.animVal[0].value + event.movementY / $scope.tabs[$scope.current].scale);
 				}
 			}
 
