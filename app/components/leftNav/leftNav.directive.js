@@ -9,7 +9,7 @@
 			bindToController: true,
 			controller: 'leftNavCtrl',
 			replace: true,
-			templateUrl: '/app/components/leftNav/leftNav.html',
+			templateUrl: 'leftNav.html',
 		}
 	}
 
