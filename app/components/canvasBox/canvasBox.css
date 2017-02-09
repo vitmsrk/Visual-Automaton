@@ -76,7 +76,7 @@ svg.canvas {
 	min-height: calc(100% + 4px);
 	top: -2px;
 	left: -2px;
-	background-image: url(/assets/img/dot.png);
+	background-image: url(assets/img/dot.png);
 	background-size: 15px 15px;
 	background-color: #f8f8f8;
 	filter: drop-shadow( -5px -5px 5px #000 );
