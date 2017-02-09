@@ -18,12 +18,25 @@
 			$cookies.put('VISUAL_AUTOMATON_TRANSLATION', code);
 			$rootScope.currentTranslation = code;
 		})();
+
+		$rootScope.preferences = {
+			defaultStateColor: '#8f9ca2',
+			stateRadius: 25,
+			stateNamePrefix: 'q',
+			stateNameColor: '#fff'
+		};
 	}
 
 	function config($mdThemingProvider) {
 		$mdThemingProvider.theme('default')
 			.primaryPalette('blue-grey', {
 				'default': '800',
+				'hue-1': '100',
+				'hue-2': '300',
+				'hue-3': '600'
+			})
+			.accentPalette('blue-grey', {
+				'default': '300',
 				'hue-1': '100',
 				'hue-2': '300',
 				'hue-3': '600'

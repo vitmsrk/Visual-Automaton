@@ -1,3 +1,5 @@
 ﻿{
-	"HELLO": "Hello"
+	"NEW_TAB": "New tab",
+	"CLOSE_TAB": "Close tab",
+	"SCALE": "Scale"
 }
