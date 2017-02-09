@@ -13,13 +13,13 @@
 		}
 	}
 
-	function canvasBoxCtrl($scope, $compile) {
+	function canvasBoxCtrl($scope, $compile, $document) {
 		const src = 'http://www.w3.org/2000/svg';
 		const xlink = 'http://www.w3.org/1999/xlink';
 
-		$scope.scale = 1.0;
 		$scope.tabsCount = 1;
 		$scope.tabs = [new Tab($scope.tabsCount)];
+		$scope.current = 0;
 
 		$scope.addTab = function () {
 			$scope.tabs.push(new Tab(++$scope.tabsCount));
@@ -34,14 +34,18 @@
 
 			var circle = document.createElementNS(src, 'circle');
 			circle.setAttributes({
-				'fill': '{{preferences.defaultStateColor}}',
-				'r': '{{preferences.stateRadius}}',
-				'transform': 'scale({{scale}})'
+				'ng-attr-fill': '{{preferences.defaultStateColor}}',
+				'ng-attr-r': '{{preferences.stateRadius}}',
 			});
 
 			var text = document.createElementNS(src, 'text');
 			text.innerHTML = state.name;
-			text.setAttributes({ 'class': 'non-selectable' });
+			text.setAttributes({
+				'class': 'non-selectable',
+				'ng-attr-fill': '{{preferences.stateNameColor}}',
+				'text-anchor': 'middle',
+				'alignment-baseline': 'middle'
+			});
 
 			var g = document.createElementNS(src, 'g');
 			g.setAttributes({ 'id': state.id + '-' + 'def' });
@@ -56,7 +60,8 @@
 			use.setAttributes({
 				'x': event.offsetX / $scope.scale,
 				'y': event.offsetY / $scope.scale,
-				'class': 'state'
+				'class': 'state',
+				'ng-attr-transform': 'scale({{tab.scale}})'
 			});
 			use.draggable();
 
@@ -70,6 +75,7 @@
 			this.index = index;
 			this.statesCount = 0;
 			this.states = [];
+			this.scale = 1.0;
 		}
 
 		function State(tabIndex, index, name) {
@@ -109,5 +115,4 @@
 			}
 		};
 	}
-
 })(angular.module('VisualAutomatonApp'));

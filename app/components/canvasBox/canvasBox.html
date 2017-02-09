@@ -1,5 +1,5 @@
 ﻿<div id="canvas-box">
-	<md-tabs md-border-bottom md-autoselect>
+	<md-tabs md-border-bottom md-autoselect md-selected="current">
 		<md-tab ng-repeat="tab in tabs">
 			<md-tab-label>
 				{{tab.title || translation.NEW_TAB + (tab.index != 1 ? ' ' + tab.index : '')}}&nbsp;&nbsp;
@@ -18,6 +18,10 @@
 	<md-toolbar class="md-primary md-hue-1" md-whiteframe="2">
 		<div class="md-toolbar-tools">
 			<span md-truncate flex class="md-hue-1"></span>
+			<md-slider-container>
+				<span class="non-selectable">{{tabs[current].scale}}</span>
+				<md-slider flex step="0.01" min="0.5" max="2.0" ng-model="tabs[current].scale" aria-label="scale" id="scale-slider"></md-slider>
+			</md-slider-container>
 		</div>
 	</md-toolbar>
 	<svg class="svg-filter">
