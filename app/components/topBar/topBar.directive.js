@@ -9,7 +9,7 @@
 			bindToController: true,
 			controller: 'topBarCtrl',
 			replace: true,
-			templateUrl: 'topBar.html',
+			templateUrl: 'app/components/topBar/topBar.html',
 		}
 	}
 

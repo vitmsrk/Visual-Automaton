@@ -9,7 +9,7 @@
 
 	function run($rootScope, $cookies, $resource) {
 		($rootScope.getTranslation = function (code) {
-			var path = '../assets/resources/';
+			var path = 'assets/resources/';
 			if (!code)
 				code = $cookies.get('VISUAL_AUTOMATON_TRANSLATION') || DEFAULT_TRANSLATION;
 			$resource(path + code + '.json').get(function (data) {

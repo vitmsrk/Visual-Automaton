@@ -9,7 +9,7 @@
 			bindToController: true,
 			controller: 'canvasBoxCtrl',
 			replace: true,
-			templateUrl: 'canvasBox.html'
+			templateUrl: 'app/components/canvasBox/canvasBox.html'
 		}
 	}
 
