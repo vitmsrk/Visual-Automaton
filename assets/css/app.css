@@ -1,5 +1,5 @@
 html {
-	font-family: 'Ubuntu light', Calibri, 'Trebuchet MS', sans-serif;
+	font-family: 'Ubuntu', sans-serif;
 }
 
 body {
@@ -13,7 +13,6 @@ body {
 	-moz-user-select: none;
 	-ms-user-select: none;
 	user-select: none;
-	cursor: default;
 }
 
 #layout {

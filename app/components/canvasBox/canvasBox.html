@@ -1,8 +1,39 @@
 ﻿<div id="canvas-box">
+	<md-tabs md-border-bottom md-autoselect md-selected="current">
+		<md-tab ng-repeat="tab in tabs">
+			<md-tab-label>
+				{{tab.title || translation.NEW_TAB + (tab.index != 1 ? ' ' + tab.index : '')}}&nbsp;&nbsp;
+				<span class="remove-tab non-selectable" ng-click="removeTab(tab)" title="{{translation.CLOSE_TAB}}">✖</span>
+			</md-tab-label>
+			<md-tab-body>
+				<svg class="canvas" id="{{tab.id}}" ng-dblclick="drawState($event, tab)"></svg>
+			</md-tab-body>
+		</md-tab>
+		<md-tab ng-click="addTab()" ng-disabled="true">
+			<md-tab-label>
+				<span class="add-tab non-selectable" title="{{translation.NEW_TAB}}">+</span>
+			</md-tab-label>
+		</md-tab>
+	</md-tabs>
 	<md-toolbar class="md-primary md-hue-1" md-whiteframe="2">
 		<div class="md-toolbar-tools">
 			<span md-truncate flex class="md-hue-1"></span>
+			<md-slider-container>
+				<span id="scale-value" class="non-selectable" title="{{translation.SCALE}}">{{tabs[current].scale * 100 | number: 0}}%</span>
+				<md-slider flex id="scale-slider" step="0.1" min="0.5" max="2.0" ng-model="tabs[current].scale" aria-label="scale"></md-slider>
+			</md-slider-container>
 		</div>
 	</md-toolbar>
-	<canvas></canvas>
+	<svg class="svg-filter">
+		<filter id="dropshadow">
+			<feGaussianBlur in="SourceAlpha" stdDeviation="2.2" />
+			<feOffset dx="-1" dy="2" result="offsetblur" />
+			<feFlood flood-color="rgba(0,0,0,0.3)" />
+			<feComposite in2="offsetblur" operator="in" />
+			<feMerge>
+				<feMergeNode />
+				<feMergeNode in="SourceGraphic" />
+			</feMerge>
+		</filter>
+	</svg>
 </div>
