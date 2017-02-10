@@ -103,3 +103,13 @@ svg.canvas {
 	height: 15px;
 	margin-right: 10px;
 }
+
+.state-menu-container md-menu-item {
+	min-height: 25px;
+	height: 25px;
+}
+
+.state-menu-container .md-button {
+	line-height: 25px;
+	min-height: 25px;
+}

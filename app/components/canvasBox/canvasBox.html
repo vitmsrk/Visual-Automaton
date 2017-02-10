@@ -19,11 +19,24 @@
 		<div class="md-toolbar-tools">
 			<span md-truncate flex class="md-hue-1"></span>
 			<md-slider-container>
-				<span id="scale-value" class="non-selectable" title="{{translation.SCALE}}">{{tabs[current].scale * 100 | number: 0}}%</span>
-				<md-slider flex id="scale-slider" step="0.1" min="0.5" max="2.0" ng-model="tabs[current].scale" aria-label="scale"></md-slider>
+				<span id="scale-value" class="non-selectable">{{tabs[current].scale * 100 | number: 0}}%</span>
+				<md-slider flex id="scale-slider" step="0.1" min="0.5" max="2.0" ng-model="tabs[current].scale" title="{{translation.SCALE}}" aria-label="scale"></md-slider>
 			</md-slider-container>
 		</div>
 	</md-toolbar>
+	<div id="state-menu">
+		<div class="md-open-menu-container md-whiteframe-z2 state-menu-container">
+			<md-menu-content width="3" onclick="console.log('parent')">
+				<md-menu-item>
+					{{a}}
+				</md-menu-item>
+				<md-menu-divider></md-menu-divider>
+				<md-menu-item>
+					<md-button md-prevent-menu-close ng-click="a()">{{translation.REMOVE}}</md-button>
+				</md-menu-item>
+			</md-menu-content>
+		</div>
+	</div>
 	<svg class="svg-filter">
 		<filter id="dropshadow">
 			<feGaussianBlur in="SourceAlpha" stdDeviation="2.2" />
