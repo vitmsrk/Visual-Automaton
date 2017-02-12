@@ -26,13 +26,26 @@
 	</md-toolbar>
 	<div id="state-menu">
 		<div class="md-open-menu-container md-whiteframe-z2 state-menu-container">
-			<md-menu-content width="3" onclick="console.log('parent')">
+			<md-menu-content width="3">
 				<md-menu-item>
-					{{a}}
+					<span>{{translation.NAME}}</span>
+					<md-input-container md-no-float class="md-block state-name">
+						<input ng-model="activeState.name" placeholder="{{activeState.name}}" aria-label="state-name">
+					</md-input-container>
 				</md-menu-item>
 				<md-menu-divider></md-menu-divider>
 				<md-menu-item>
-					<md-button md-prevent-menu-close ng-click="a()">{{translation.REMOVE}}</md-button>
+					<md-checkbox ng-model="activeState.initial" aria-label="state-initial">{{translation.INITIAL}}</md-checkbox>
+				</md-menu-item>
+				<md-menu-item>
+					<span>{{translation.FINAL}}</span>
+				</md-menu-item>
+				<md-menu-divider></md-menu-divider>
+				<md-menu-item>
+					<button class="md-button md-ink-ripple" type="button" ng-click="removeState()" role="menuitem">
+						<md-icon><i class="material-icons md-18">delete_forever</i></md-icon>
+						<span>{{translation.REMOVE}}</span>
+					</button>
 				</md-menu-item>
 			</md-menu-content>
 		</div>

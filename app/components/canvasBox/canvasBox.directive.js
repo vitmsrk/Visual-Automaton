@@ -19,16 +19,14 @@
 
 		var menuCtrl = {
 			open: function (event) {
-				$scope.activeState = $scope.tabs[$scope.current].states[$scope.tabs[$scope.current].states.map(function (s) { return s.id }).indexOf(event.target.getAttribute('id'))];
 				$mdMenu.show({
 					scope: $scope,
 					mdMenuCtrl: menuCtrl,
-					element: angular.element(angular.copy(document.getElementById('state-menu').firstElementChild)),
+					element: $compile(angular.element(angular.copy(document.getElementById('state-menu').firstElementChild)))($scope),
 					target: event.target
 				});
 			},
 			close: function () {
-				$scope.activeState = null;
 				$mdMenu.hide();
 			},
 			positionMode: function () {
@@ -49,7 +47,7 @@
 		$scope.tabs = [new Tab($scope.tabsCount)];
 		$scope.current = 0;
 		$scope.hasDragged = false;
-		$scope.activeState = null;
+		$scope.activeState = 5;
 
 		$scope.addTab = function () {
 			$scope.tabs.push(new Tab(++$scope.tabsCount));
@@ -61,7 +59,6 @@
 
 		$scope.drawState = function (event, tab) {
 			var state = new State(tab.index, ++tab.statesCount, $scope.preferences.stateNamePrefix + (tab.statesCount - 1));
-			tab.states.push(state);
 
 			var circle = document.createElementNS(src, 'circle');
 			circle.setAttributes({
@@ -98,23 +95,30 @@
 			});
 			use.draggable();
 
+			state.defs = $compile(defs)($scope)[0];
+			state.use = $compile(use)($scope)[0];
+			tab.states.push(state);
+
 			var canvas = document.getElementById(tab.id);
-			canvas.appendChild($compile(defs)($scope)[0]);
-			canvas.appendChild($compile(use)($scope)[0]);
+			canvas.appendChild(state.defs);
+			canvas.appendChild(state.use);
 		};
 
 		$scope.removeState = function () {
-			alert();
-			console.log($scope.activeState);
+			var canvas = document.getElementById($scope.tabs[$scope.current].id);
+			canvas.removeChild($scope.activeState.use);
+			canvas.removeChild($scope.activeState.defs);
 			$scope.tabs[$scope.current].states.splice($scope.tabs[$scope.current].states.indexOf($scope.activeState), 1);
-		};
-
-		$scope.a = function () {
-			console.log('success');
+			$scope.activeState = null;
 		};
 
 		$scope.openMenu = function (event) {
-			$scope.hasDragged ? $scope.hasDragged = false : menuCtrl.open(event);
+			if ($scope.hasDragged)
+				$scope.hasDragged = false;
+			else {
+				$scope.activeState = $scope.tabs[$scope.current].states.getById(event.target.id);
+				menuCtrl.open(event);
+			}
 		};
 
 		function Tab(index) {
@@ -129,6 +133,10 @@
 			this.id = 'state-' + tabIndex + index;
 			this.index = index;
 			this.name = name;
+			this.initial = false;
+			this.final = false;
+			this.defs = null;
+			this.use = null;
 		}
 
 		Element.prototype.setAttributes = function (attrs) {
@@ -138,7 +146,6 @@
 
 		Element.prototype.draggable = function (targets) {
 			var that = this;
-			targets = targets || [];
 
 			that.addEventListener('mousedown', function (event) {
 				event.preventDefault();
@@ -148,11 +155,14 @@
 
 			function mouseMove(event) {
 				$scope.hasDragged = true;
-				that.setAttribute('x', that.x.animVal.value + event.movementX / $scope.tabs[$scope.current].scale);
-				that.setAttribute('y', that.y.animVal.value + event.movementY / $scope.tabs[$scope.current].scale);
+				var scale = $scope.tabs[$scope.current].scale;
+				that.setAttribute('x', that.x.animVal.value + event.movementX / scale);
+				that.setAttribute('y', that.y.animVal.value + event.movementY / scale);
+				if (!targets)
+					return;
 				for (var i in targets) {
-					targets[i].setAttribute('x', targets[0].x.animVal[0].value + event.movementX / $scope.tabs[$scope.current].scale);
-					targets[i].setAttribute('y', targets[0].y.animVal[0].value + event.movementY / $scope.tabs[$scope.current].scale);
+					targets[i].setAttribute('x', targets[i].x.animVal[0].value + event.movementX / scale);
+					targets[i].setAttribute('y', targets[i].y.animVal[0].value + event.movementY / scale);
 				}
 			}
 
@@ -160,6 +170,10 @@
 				document.removeEventListener('mousemove', mouseMove);
 				document.removeEventListener('mouseup', mouseUp);
 			}
+		};
+
+		Array.prototype.getById = function (id) {
+			return this[this.map(function (e) { return e.id }).indexOf(id)];
 		};
 	}
 })(angular.module('VisualAutomatonApp'));

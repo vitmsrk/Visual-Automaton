@@ -2,5 +2,8 @@
 	"NEW_TAB": "New tab",
 	"CLOSE_TAB": "Close tab",
 	"SCALE": "Scale",
-	"REMOVE": "Remove"
+	"REMOVE": "Remove",
+	"NAME": "Name",
+	"INITIAL": "Initial",
+	"FINAL": "Final"
 }
