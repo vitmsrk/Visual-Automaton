@@ -152,6 +152,10 @@
 			$scope.activeState.initial ? $scope.initialState = null : $scope.initialState = $scope.activeState;
 		};
 
+		$scope.startEdge = function () {
+
+		};
+
 		$scope.$watch('activeState.name', function (newValue, oldValue) {
 			if (newValue && newValue.length > $scope.preferences.stateNameMaxLength)
 				$scope.activeState.name = oldValue;
