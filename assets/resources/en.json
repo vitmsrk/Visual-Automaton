@@ -5,5 +5,6 @@
 	"REMOVE": "Remove",
 	"NAME": "Name",
 	"INITIAL": "Initial",
-	"FINAL": "Final"
+	"FINAL": "Final",
+	"REGULAR_EXPRESSION": "Regular expression"
 }

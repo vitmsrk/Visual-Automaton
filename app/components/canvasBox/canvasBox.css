@@ -7,7 +7,7 @@
 	height: calc(100% + 8px);
 }
 
-#canvas-box svg.svg-filter {
+#canvas-box svg.svg-defs {
 	width: 0;
 	height: 0;
 	position: absolute;
@@ -115,6 +115,11 @@ svg.canvas {
 
 .state-menu-container md-menu-item .state-name {
 	width: 40px;
+	bottom: 2px;
+}
+
+.state-menu-container md-menu-item .state-name .md-errors-spacer {
+	display: none;
 }
 
 .state-menu-container .md-button {
@@ -130,4 +135,12 @@ svg.canvas {
 .state-menu-container .md-button md-icon .material-icons {
 	position: relative;
 	bottom: 2px;
+}
+
+.state-menu-container md-checkbox .md-container {
+	left: 12px;
+}
+
+.state-menu-container md-checkbox .md-label {
+	margin-left: 28px;
 }
