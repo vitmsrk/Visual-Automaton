@@ -31,3 +31,11 @@
 #logo-caption:hover {
 	color: #fff;
 }
+
+#version-number {
+	margin-left: 15px;
+	margin-top: 2px;
+	cursor: default;
+	font-size: 18px;
+	color: rgba(255, 255, 255, .3);
+}

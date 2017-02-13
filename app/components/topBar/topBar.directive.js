@@ -13,8 +13,8 @@
 		}
 	}
 
-	function topBarCtrl($scope, $rootScope) {
-
+	function topBarCtrl($scope, config) {
+		$scope.version = config.version;
 	}
 
 })(angular.module('VisualAutomatonApp'));

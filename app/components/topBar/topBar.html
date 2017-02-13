@@ -1,6 +1,7 @@
 ﻿<md-toolbar id="top-bar" class="md-primary">
 	<div class="md-toolbar-tools">
 		<span id="logo-caption" class="non-selectable md-hue-1">Visual Automaton</span>
+		<span id="version-number" class="non-selectable">{{version}}</span>
 		<span md-truncate flex class="md-hue-1"></span>
 		<md-button class="md-icon-button translation-btn" ng-class="{active: currentTranslation == 'en'}" ng-click="getTranslation('en')" title="English" aria-label="English">
 			<img src="assets/img/en.png" />

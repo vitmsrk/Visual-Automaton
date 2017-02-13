@@ -2,6 +2,7 @@
 	'use strict';
 
 	angular.module('VisualAutomatonApp', ['ngMaterial', 'ngResource', 'ngCookies'])
+		.constant('config', { version: '0.1.7' })
 		.run(['$rootScope', '$cookies', '$resource', run])
 		.config(['$mdThemingProvider', config]);
 
