@@ -19,12 +19,44 @@
 		<div class="md-toolbar-tools">
 			<span md-truncate flex class="md-hue-1"></span>
 			<md-slider-container>
-				<span id="scale-value" class="non-selectable" title="{{translation.SCALE}}">{{tabs[current].scale * 100 | number: 0}}%</span>
-				<md-slider flex id="scale-slider" step="0.1" min="0.5" max="2.0" ng-model="tabs[current].scale" aria-label="scale"></md-slider>
+				<span id="scale-value" class="non-selectable">{{tabs[current].scale * 100 | number: 0}}%</span>
+				<md-slider flex id="scale-slider" step="0.1" min="0.5" max="2.0" ng-model="tabs[current].scale" title="{{translation.SCALE}}" aria-label="scale"></md-slider>
 			</md-slider-container>
 		</div>
 	</md-toolbar>
-	<svg class="svg-filter">
+	<div id="state-menu">
+		<div class="md-open-menu-container md-whiteframe-z2 state-menu-container">
+			<md-menu-content width="3">
+				<md-menu-item>
+					<span>{{translation.NAME}}</span>
+					<md-input-container md-no-float class="md-block state-name">
+						<input ng-model="activeState.name" placeholder="{{activeState.name}}" ng-keypress="$event.which == 13 ? closeMenu() : 0" aria-label="state-name">
+					</md-input-container>
+				</md-menu-item>
+				<md-menu-divider></md-menu-divider>
+				<md-menu-item>
+					<md-checkbox ng-transclude ng-model="activeState.initial" md-prevent-menu-close ng-click="toggleInitial()" type="checkbox" role="checkbox" aria-label="state-initial">
+						<div class="md-container md-ink-ripple" md-ink-ripple md-ink-ripple-checkbox><div class="md-icon"></div><div class="md-ripple-container"></div></div>
+						<div class="md-label">{{translation.INITIAL}}</div>
+					</md-checkbox>
+				</md-menu-item>
+				<md-menu-item>
+					<md-checkbox ng-transclude ng-model="activeState.final" type="checkbox" role="checkbox" aria-label="state-final">
+						<div class="md-container md-ink-ripple" md-ink-ripple md-ink-ripple-checkbox><div class="md-icon"></div><div class="md-ripple-container"></div></div>
+						<div class="md-label">{{translation.FINAL}}</div>
+					</md-checkbox>
+				</md-menu-item>
+				<md-menu-divider></md-menu-divider>
+				<md-menu-item>
+					<button md-prevent-menu-close class="md-button md-ink-ripple" type="button" ng-click="removeState()" role="menuitem">
+						<md-icon><i class="material-icons md-18">delete_forever</i></md-icon>
+						<span>{{translation.REMOVE}}</span>
+					</button>
+				</md-menu-item>
+			</md-menu-content>
+		</div>
+	</div>
+	<svg class="svg-defs">
 		<filter id="dropshadow">
 			<feGaussianBlur in="SourceAlpha" stdDeviation="2.2" />
 			<feOffset dx="-1" dy="2" result="offsetblur" />
@@ -35,5 +67,10 @@
 				<feMergeNode in="SourceGraphic" />
 			</feMerge>
 		</filter>
+		<defs>
+			<marker id="arrow" markerWidth="7" markerHeight="7" viewBox="-3 -3 6 6" refX="-1" refY="0" markerUnits="strokeWidth" orient="auto">
+				<polygon points="-1,0 -3,3 3,0 -3,-3" fill="{{preferences.pathColor}}" />
+			</marker>
+		</defs>
 	</svg>
 </div>
