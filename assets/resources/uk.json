@@ -4,8 +4,8 @@
 	"SCALE": "Масштаб",
 	"REMOVE": "Видалити",
 	"NAME": "Назва",
-	"INITIAL": "Початковий",
-	"FINAL": "Заключний",
+	"START_STATE": "Початковий стан",
+	"FINAL_STATE": "Заключний стан",
 	"REGULAR_EXPRESSION": "Регулярний вираз",
-	"START_EDGE": "Почати ребро"
+	"BUILD_TRANSITION": "Будувати перехід"
 }

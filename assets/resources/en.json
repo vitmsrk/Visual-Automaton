@@ -4,8 +4,8 @@
 	"SCALE": "Scale",
 	"REMOVE": "Remove",
 	"NAME": "Name",
-	"INITIAL": "Initial",
-	"FINAL": "Final",
+	"START_STATE": "Start state",
+	"FINAL_STATE": "Final state",
 	"REGULAR_EXPRESSION": "Regular expression",
-	"START_EDGE": "Start edge"
+	"BUILD_TRANSITION": "Build transition"
 }

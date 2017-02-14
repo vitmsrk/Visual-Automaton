@@ -22,15 +22,15 @@
 
 		$rootScope.preferences = {
 			defaultStateColor: '#8f9ca2',
-			initialStateColor: '#0277BD',
+			startStateColor: '#0277BD',
 			finalStateColor: '#388E3C',
 			stateRadius: 25,
 			stateNamePrefix: 'q',
 			stateNameColor: '#fff',
 			stateNameMaxLength: 3,
-			pathColor: '#555',
+			pathColor: '#666',
 			pathWidth: 2,
-			initialPathSize: 35
+			startPathSize: 35
 		};
 	}
 

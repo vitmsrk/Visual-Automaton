@@ -82,9 +82,16 @@ svg.canvas {
 	filter: drop-shadow( -5px -5px 5px #000 );
 }
 
+svg.canvas circle {
+	filter: url(#dropshadow);
+}
+
 .state {
 	cursor: pointer;
-	filter: url(#dropshadow);
+}
+
+.transition {
+
 }
 
 #scale-slider {

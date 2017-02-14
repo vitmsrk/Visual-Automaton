@@ -49,7 +49,7 @@
 			offsets: function () {
 				return {
 					top: $scope.preferences.stateRadius * 1.5 * $scope.tabs[$scope.current].scale,
-					left: ($scope.preferences.stateRadius * 2 + ($scope.activeState.initial ? $scope.preferences.initialPathSize + 10 : 0)) * $scope.tabs[$scope.current].scale
+					left: ($scope.preferences.stateRadius * 2 + ($scope.activeState.start ? $scope.preferences.startPathSize + 10 : 0)) * $scope.tabs[$scope.current].scale
 				};
 			}
 		};
@@ -60,6 +60,10 @@
 		$scope.hasDragged = false;
 		$scope.activeState = null;
 		$scope.activeStateName = null;
+		
+		$scope.getCanvas = function () {
+			return document.getElementById($scope.tabs[$scope.current].id);
+		};
 
 		$scope.addTab = function () {
 			$scope.tabs.push(new Tab(++$scope.tabsCount));
@@ -74,7 +78,7 @@
 
 			var circle = document.createElementNS(src, 'circle');
 			circle.setAttributes({
-				'ng-attr-fill': '{{tabs[current].states.getById("' + state.id + '").final ? tabs[current].finalStateColor : tabs[current].states.getById("' + state.id + '").initial ? tabs[current].initialStateColor : tabs[current].defaultStateColor}}',
+				'ng-attr-fill': '{{tabs[current].states.getById("' + state.id + '").final ? tabs[current].finalStateColor : tabs[current].states.getById("' + state.id + '").start ? tabs[current].startStateColor : tabs[current].defaultStateColor}}',
 				'ng-attr-r': '{{tabs[current].stateRadius}}',
 			});
 
@@ -87,11 +91,11 @@
 				'alignment-baseline': 'middle'
 			});
 
-			var initialPath = document.createElementNS(src, 'path');
-			var mx = -($scope.tabs[$scope.current].stateRadius + $scope.preferences.initialPathSize + 10);
-			var lx = -($scope.tabs[$scope.current].stateRadius + 10);
-			initialPath.setAttributes({
-				'ng-if': 'tabs[current].states.getById("' + state.id + '").initial',
+			var startPath = document.createElementNS(src, 'path'),
+			mx = -($scope.tabs[$scope.current].stateRadius + $scope.preferences.startPathSize + 10),
+			lx = -($scope.tabs[$scope.current].stateRadius + 10);
+			startPath.setAttributes({
+				'ng-if': 'tabs[current].states.getById("' + state.id + '").start',
 				'ng-attr-d': 'M ' + mx + ', 0 L ' + lx + ', 0',
 				'fill': 'none',
 				'ng-attr-stroke': '{{preferences.pathColor}}',
@@ -103,7 +107,7 @@
 			g.setAttributes({ 'id': state.id + '-' + 'def' });
 			g.appendChild($compile(circle)($scope)[0]);
 			g.appendChild($compile(text)($scope)[0]);
-			g.appendChild($compile(initialPath)($scope)[0]);
+			g.appendChild($compile(startPath)($scope)[0]);
 
 			var defs = document.createElementNS(src, 'defs');
 			defs.appendChild($compile(g)($scope)[0]);
@@ -124,7 +128,7 @@
 			state.use = $compile(use)($scope)[0];
 			tab.states.push(state);
 
-			var canvas = document.getElementById(tab.id);
+			var canvas = $scope.getCanvas();
 			canvas.appendChild(state.defs);
 			canvas.appendChild(state.use);
 		};
@@ -145,15 +149,53 @@
 			menuCtrl.close();
 		};
 
-		$scope.toggleInitial = function () {
+		$scope.toggleStart = function () {
 			for (var i in $scope.tabs[$scope.current].states)
 				if (!angular.equals($scope.tabs[$scope.current].states[i], $scope.activeState))
-					$scope.tabs[$scope.current].states[i].initial = false;
-			$scope.activeState.initial ? $scope.initialState = null : $scope.initialState = $scope.activeState;
+					$scope.tabs[$scope.current].states[i].start = false;
 		};
 
-		$scope.startEdge = function () {
+		$scope.buildTransition = function (event) {
+			var tab = $scope.tabs[$scope.current],
+			transition = new Transition(tab.index, ++tab.transitionsCount);
+			transition.M.x = parseInt($scope.activeState.use.getAttribute('x')) + tab.stateRadius;
+			transition.M.y = $scope.activeState.use.getAttribute('y');
+			$scope.activeState.targets.push(transition.M);
+			//$scope.activeState.use.draggable($scope.activeState.targets);
+			$scope.$watch('activeState', function (newValue, oldValue) {
+				console.log(newValue);
+			});
 
+			var path = document.createElementNS(src, 'path');
+			path.setAttributes({
+				'id': transition.id + '-' + 'def',
+				'ng-attr-d': 'M {{tabs[current].transitions.getById("' + transition.id + '").M.x}}, {{tabs[current].transitions.getById("' + transition.id + '").M.y}} L 400, 400',
+				'fill': 'none',
+				'ng-attr-stroke': '{{preferences.pathColor}}',
+				'ng-attr-stroke-width': '{{preferences.pathWidth}}px',
+				'marker-end': 'url(#arrow)'
+			});
+
+			var defs = document.createElementNS(src, 'defs');
+			defs.appendChild($compile(path)($scope)[0]);
+
+			var use = document.createElementNS(src, 'use');
+			use.setAttributeNS(xlink, 'href', '#' + path.getAttribute('id'));
+			use.setAttributes({
+				'id': transition.id,
+				'class': 'transition',
+				'ng-attr-transform': 'scale({{tabs[current].scale}})'
+			});
+
+			transition.defs = $compile(defs)($scope)[0];
+			transition.use = $compile(use)($scope)[0];
+			tab.transitions.push(transition);
+
+			//$scope.$watch('tabs[current].transitions.getById("' + transition.id + '").M')
+
+			var canvas = $scope.getCanvas();
+			canvas.appendChild(transition.defs);
+			canvas.appendChild(transition.use);
 		};
 
 		$scope.$watch('activeState.name', function (newValue, oldValue) {
@@ -165,23 +207,36 @@
 			this.id = 'tab-' + index;
 			this.index = index;
 			this.statesCount = 0;
+			this.transitionsCount = 0;
 			this.states = [];
+			this.transitions = [];
 			this.scale = 1.0;
 			this.defaultStateColor = $scope.preferences.defaultStateColor;
-			this.initialStateColor = $scope.preferences.initialStateColor;
+			this.startStateColor = $scope.preferences.startStateColor;
 			this.finalStateColor = $scope.preferences.finalStateColor;
 			this.stateRadius = $scope.preferences.stateRadius;
 			this.stateNameColor = $scope.preferences.stateNameColor;
 		}
 
 		function State(tabIndex, index, name) {
-			this.id = 'state-' + tabIndex + index;
+			this.id = 'state-' + tabIndex + '-' + index;
 			this.index = index;
 			this.name = name;
-			this.initial = false;
+			this.start = false;
 			this.final = false;
 			this.defs = null;
 			this.use = null;
+			this.targets = [];
+			this.position = { x: 0, y: 0 };
+		}
+
+		function Transition(tabIndex, index) {
+			this.id = 'transition-' + tabIndex + '-' + index;
+			this.index = index;
+			this.name = null;
+			this.defs = null;
+			this.use = null;
+			this.M = { x: 0, y: 0 };
 		}
 
 		Element.prototype.setAttributes = function (attrs) {
@@ -203,11 +258,12 @@
 				var scale = $scope.tabs[$scope.current].scale;
 				that.setAttribute('x', that.x.animVal.value + event.movementX / scale);
 				that.setAttribute('y', that.y.animVal.value + event.movementY / scale);
-				if (!targets)
-					return;
+				if (!targets) return;
 				for (var i in targets) {
-					targets[i].setAttribute('x', targets[i].x.animVal[0].value + event.movementX / scale);
-					targets[i].setAttribute('y', targets[i].y.animVal[0].value + event.movementY / scale);
+					targets[i].x += event.movementX / scale;
+					targets[i].y += event.movementY / scale;
+					//targets[i].setAttribute('x', targets[i].x.animVal[0].value + event.movementX / scale);
+					//targets[i].setAttribute('y', targets[i].y.animVal[0].value + event.movementY / scale);
 				}
 			}
 
