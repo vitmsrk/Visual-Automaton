@@ -78,7 +78,7 @@
 
 			var circle = document.createElementNS(src, 'circle');
 			circle.setAttributes({
-				'ng-attr-fill': '{{tabs[current].states.getById("' + state.id + '").final ? tabs[current].finalStateColor : tabs[current].states.getById("' + state.id + '").start ? tabs[current].startStateColor : tabs[current].defaultStateColor}}',
+				'ng-attr-fill': '{{tabs[current].states.getById("' + state.id + '").accept ? tabs[current].acceptStateColor : tabs[current].states.getById("' + state.id + '").start ? tabs[current].startStateColor : tabs[current].defaultStateColor}}',
 				'ng-attr-r': '{{tabs[current].stateRadius}}',
 			});
 
@@ -213,7 +213,7 @@
 			this.scale = 1.0;
 			this.defaultStateColor = $scope.preferences.defaultStateColor;
 			this.startStateColor = $scope.preferences.startStateColor;
-			this.finalStateColor = $scope.preferences.finalStateColor;
+			this.acceptStateColor = $scope.preferences.acceptStateColor;
 			this.stateRadius = $scope.preferences.stateRadius;
 			this.stateNameColor = $scope.preferences.stateNameColor;
 		}
@@ -223,7 +223,7 @@
 			this.index = index;
 			this.name = name;
 			this.start = false;
-			this.final = false;
+			this.accept = false;
 			this.defs = null;
 			this.use = null;
 			this.targets = [];

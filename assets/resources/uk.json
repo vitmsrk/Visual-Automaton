@@ -4,8 +4,8 @@
 	"SCALE": "Масштаб",
 	"REMOVE": "Видалити",
 	"NAME": "Назва",
-	"START_STATE": "Початковий стан",
-	"FINAL_STATE": "Заключний стан",
+	"START": "Початковий",
+	"ACCEPT": "Заключний",
 	"REGULAR_EXPRESSION": "Регулярний вираз",
-	"BUILD_TRANSITION": "Будувати перехід"
+	"TRANSITION": "Перехід"
 }

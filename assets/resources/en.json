@@ -4,8 +4,8 @@
 	"SCALE": "Scale",
 	"REMOVE": "Remove",
 	"NAME": "Name",
-	"START_STATE": "Start state",
-	"FINAL_STATE": "Final state",
+	"START": "Start",
+	"ACCEPT": "Accept",
 	"REGULAR_EXPRESSION": "Regular expression",
-	"BUILD_TRANSITION": "Build transition"
+	"TRANSITION": "Transition"
 }

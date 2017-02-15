@@ -37,19 +37,19 @@
 				<md-menu-item>
 					<md-checkbox ng-transclude ng-model="activeState.start" md-prevent-menu-close ng-click="toggleStart()" type="checkbox" role="checkbox" aria-label="state-initial">
 						<div class="md-container md-ink-ripple" md-ink-ripple md-ink-ripple-checkbox><div class="md-icon"></div><div class="md-ripple-container"></div></div>
-						<div class="md-label">{{translation.START_STATE}}</div>
+						<div class="md-label">{{translation.START}}</div>
 					</md-checkbox>
 				</md-menu-item>
 				<md-menu-item>
-					<md-checkbox ng-transclude ng-model="activeState.final" type="checkbox" role="checkbox" aria-label="state-final">
+					<md-checkbox ng-transclude ng-model="activeState.accept" type="checkbox" role="checkbox" aria-label="state-final">
 						<div class="md-container md-ink-ripple" md-ink-ripple md-ink-ripple-checkbox><div class="md-icon"></div><div class="md-ripple-container"></div></div>
-						<div class="md-label">{{translation.FINAL_STATE}}</div>
+						<div class="md-label">{{translation.ACCEPT}}</div>
 					</md-checkbox>
 				</md-menu-item>
 				<md-menu-item>
-					<button class="md-button md-ink-ripple" type="button" ng-click="buildTransition($event)" role="menuitem">
+					<button class="md-button md-ink-ripple" type="button" ng-click="buildTansition($event)" role="menuitem">
 						<md-icon><i class="material-icons md-18">arrow_forward</i></md-icon>
-						<span>{{translation.BUILD_TRANSITION}}</span>
+						<span>{{translation.TRANSITION}}</span>
 					</button>
 				</md-menu-item>
 				<md-menu-divider></md-menu-divider>
