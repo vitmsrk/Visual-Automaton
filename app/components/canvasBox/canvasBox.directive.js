@@ -134,9 +134,19 @@
 		};
 
 		$scope.removeState = function () {
-			var canvas = document.getElementById($scope.tabs[$scope.current].id);
+			var canvas = $scope.getCanvas();
+
 			canvas.removeChild($scope.activeState.use);
 			canvas.removeChild($scope.activeState.defs);
+
+			for (var i in $scope.activeState.transitions) {
+				var transition = $scope.activeState.transitions[i];
+				console.log(transition);
+				canvas.removeChild(transition.use);
+				canvas.removeChild(transition.defs);
+				//$scope.tabs[$scope.current].transitions.splice($scope.tabs[$scope.current].transitions.indexOf(transition), 1);
+			}
+
 			$scope.tabs[$scope.current].states.splice($scope.tabs[$scope.current].states.indexOf($scope.activeState), 1);
 			menuCtrl.close();
 		};
@@ -157,19 +167,14 @@
 
 		$scope.buildTransition = function (event) {
 			var tab = $scope.tabs[$scope.current],
-			transition = new Transition(tab.index, ++tab.transitionsCount);
-			transition.M.x = parseInt($scope.activeState.use.getAttribute('x')) + tab.stateRadius;
-			transition.M.y = $scope.activeState.use.getAttribute('y');
-			$scope.activeState.targets.push(transition.M);
-			//$scope.activeState.use.draggable($scope.activeState.targets);
-			$scope.$watch('activeState', function (newValue, oldValue) {
-				console.log(newValue);
-			});
+			transition = new Transition(tab.index, ++tab.transitionsCount),
+			x = parseInt($scope.activeState.use.getAttribute('x')) + tab.stateRadius,
+			y = $scope.activeState.use.getAttribute('y');
 
 			var path = document.createElementNS(src, 'path');
 			path.setAttributes({
 				'id': transition.id + '-' + 'def',
-				'ng-attr-d': 'M {{tabs[current].transitions.getById("' + transition.id + '").M.x}}, {{tabs[current].transitions.getById("' + transition.id + '").M.y}} L 400, 400',
+				'ng-attr-d': 'M' + x + ',' + y + 'L400,400',
 				'fill': 'none',
 				'ng-attr-stroke': '{{preferences.pathColor}}',
 				'ng-attr-stroke-width': '{{preferences.pathWidth}}px',
@@ -178,6 +183,7 @@
 
 			var defs = document.createElementNS(src, 'defs');
 			defs.appendChild($compile(path)($scope)[0]);
+			$scope.activeState.targetsM.push(defs.firstElementChild);
 
 			var use = document.createElementNS(src, 'use');
 			use.setAttributeNS(xlink, 'href', '#' + path.getAttribute('id'));
@@ -190,8 +196,7 @@
 			transition.defs = $compile(defs)($scope)[0];
 			transition.use = $compile(use)($scope)[0];
 			tab.transitions.push(transition);
-
-			//$scope.$watch('tabs[current].transitions.getById("' + transition.id + '").M')
+			$scope.activeState.transitions.push(transition);
 
 			var canvas = $scope.getCanvas();
 			canvas.appendChild(transition.defs);
@@ -226,8 +231,8 @@
 			this.accept = false;
 			this.defs = null;
 			this.use = null;
-			this.targets = [];
-			this.position = { x: 0, y: 0 };
+			this.transitions = [];
+			this.targetsM = [];
 		}
 
 		function Transition(tabIndex, index) {
@@ -236,7 +241,6 @@
 			this.name = null;
 			this.defs = null;
 			this.use = null;
-			this.M = { x: 0, y: 0 };
 		}
 
 		Element.prototype.setAttributes = function (attrs) {
@@ -244,10 +248,14 @@
 				this.setAttribute(key, attrs[key]);
 		};
 
-		Element.prototype.draggable = function (targets) {
-			var that = this;
+		Element.prototype.draggable = function () {
+			var that = this,
+			targetsM = [],
+			scale = 0;
 
 			that.addEventListener('mousedown', function (event) {
+				targetsM = $scope.tabs[$scope.current].states.getById(event.target.getAttribute('id')).targetsM;
+				scale = $scope.tabs[$scope.current].scale;
 				event.preventDefault();
 				document.addEventListener('mousemove', mouseMove);
 				document.addEventListener('mouseup', mouseUp);
@@ -255,13 +263,15 @@
 
 			function mouseMove(event) {
 				$scope.hasDragged = true;
-				var scale = $scope.tabs[$scope.current].scale;
-				that.setAttribute('x', that.x.animVal.value + event.movementX / scale);
-				that.setAttribute('y', that.y.animVal.value + event.movementY / scale);
-				if (!targets) return;
-				for (var i in targets) {
-					targets[i].x += event.movementX / scale;
-					targets[i].y += event.movementY / scale;
+
+				var x = that.x.animVal.value + event.movementX / scale,
+				y = that.y.animVal.value + event.movementY / scale;
+				that.setAttribute('x', x);
+				that.setAttribute('y', y);
+
+				for (var i in targetsM) {
+					//targets[i].x += event.movementX / scale;
+					//targets[i].y += event.movementY / scale;
 					//targets[i].setAttribute('x', targets[i].x.animVal[0].value + event.movementX / scale);
 					//targets[i].setAttribute('y', targets[i].y.animVal[0].value + event.movementY / scale);
 				}
