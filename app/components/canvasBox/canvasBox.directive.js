@@ -60,7 +60,53 @@
 		$scope.hasDragged = false;
 		$scope.activeState = null;
 		$scope.activeStateName = null;
-		
+
+		$scope.transitionMode = new (function () {
+			var that = this,
+				target = null,
+				scale = 0;
+
+			var backdrop = angular.element('<md-backdrop class="md-menu-backdrop md-click-catcher"></md-backdrop>')[0];
+			backdrop.addEventListener('click', click);
+
+			that.enabled = false;
+
+			that.start = function (t) {
+				that.enabled = true;
+				target = t;
+				scale = $scope.tabs[$scope.current].scale;
+				document.addEventListener('mousemove', mouseMove);
+				//document.body.appendChild(backdrop);
+
+			};
+
+			that.stop = function () {
+				that.enabled = false;
+				console.log('stop');
+			};
+
+			function mouseMove(event) {
+				var x = event.movementX / scale,
+					y = event.movementY / scale;
+
+				var d = target.getAttribute('d'),
+						L = d.match(/L[-\d\.]*,[-\d\.]*/)[0],
+						l = L.substring(1).split(','),
+						lx = parseFloat(l[0]) + x,
+						ly = parseFloat(l[1]) + y;
+				d = d.replace(L, 'L' + lx + ',' + ly);
+				target.setAttribute('d', d);
+			}
+
+			function click(event) {
+				console.log('click');
+				//event.preventDefault();
+				//that.stop();
+				//document.removeEventListener('mousemove', mouseMove);
+				//document.removeEventListener('click', click);
+			}
+		});
+
 		$scope.getCanvas = function () {
 			return document.getElementById($scope.tabs[$scope.current].id);
 		};
@@ -141,10 +187,11 @@
 
 			for (var i in $scope.activeState.transitions) {
 				var transition = $scope.activeState.transitions[i];
-				console.log(transition);
-				canvas.removeChild(transition.use);
-				canvas.removeChild(transition.defs);
-				//$scope.tabs[$scope.current].transitions.splice($scope.tabs[$scope.current].transitions.indexOf(transition), 1);
+				if (transition instanceof Transition) {
+					canvas.removeChild(transition.use);
+					canvas.removeChild(transition.defs);
+					$scope.tabs[$scope.current].transitions.splice($scope.tabs[$scope.current].transitions.indexOf(transition), 1);
+				}
 			}
 
 			$scope.tabs[$scope.current].states.splice($scope.tabs[$scope.current].states.indexOf($scope.activeState), 1);
@@ -168,13 +215,19 @@
 		$scope.buildTransition = function (event) {
 			var tab = $scope.tabs[$scope.current],
 			transition = new Transition(tab.index, ++tab.transitionsCount),
-			x = parseInt($scope.activeState.use.getAttribute('x')) + tab.stateRadius,
-			y = $scope.activeState.use.getAttribute('y');
+			mx = parseInt($scope.activeState.use.getAttribute('x')) + tab.stateRadius,
+			my = $scope.activeState.use.getAttribute('y'),
+			clientRect = $scope.getCanvas().getBoundingClientRect(),
+			lx = event.x - clientRect.left,
+			ly = event.y - clientRect.top;
+
+			console.log(event);
+			console.log($scope.getCanvas().getBoundingClientRect());
 
 			var path = document.createElementNS(src, 'path');
 			path.setAttributes({
 				'id': transition.id + '-' + 'def',
-				'ng-attr-d': 'M' + x + ',' + y + 'L400,400',
+				'ng-attr-d': 'M' + mx + ',' + my + ' L' + lx + ',' + ly,
 				'fill': 'none',
 				'ng-attr-stroke': '{{preferences.pathColor}}',
 				'ng-attr-stroke-width': '{{preferences.pathWidth}}px',
@@ -201,6 +254,8 @@
 			var canvas = $scope.getCanvas();
 			canvas.appendChild(transition.defs);
 			canvas.appendChild(transition.use);
+
+			$scope.transitionMode.start(defs.firstElementChild);
 		};
 
 		$scope.$watch('activeState.name', function (newValue, oldValue) {
@@ -250,8 +305,8 @@
 
 		Element.prototype.draggable = function () {
 			var that = this,
-			targetsM = [],
-			scale = 0;
+				targetsM = [],
+				scale = 0;
 
 			that.addEventListener('mousedown', function (event) {
 				targetsM = $scope.tabs[$scope.current].states.getById(event.target.getAttribute('id')).targetsM;
@@ -264,16 +319,22 @@
 			function mouseMove(event) {
 				$scope.hasDragged = true;
 
-				var x = that.x.animVal.value + event.movementX / scale,
-				y = that.y.animVal.value + event.movementY / scale;
-				that.setAttribute('x', x);
-				that.setAttribute('y', y);
+				var x = event.movementX / scale,
+					y = event.movementY / scale;
+
+				that.setAttribute('x', that.x.animVal.value + x);
+				that.setAttribute('y', that.y.animVal.value + y);
 
 				for (var i in targetsM) {
-					//targets[i].x += event.movementX / scale;
-					//targets[i].y += event.movementY / scale;
-					//targets[i].setAttribute('x', targets[i].x.animVal[0].value + event.movementX / scale);
-					//targets[i].setAttribute('y', targets[i].y.animVal[0].value + event.movementY / scale);
+					if (typeof targetsM[i] === 'function')
+						continue;
+					var d = targetsM[i].getAttribute('d'),
+						M = d.match(/M[-\d\.]*,[-\d\.]*\s/)[0],
+						m = M.substring(1).trim().split(','),
+						mx = parseFloat(m[0]) + x,
+						my = parseFloat(m[1]) + y;
+					d = d.replace(M, 'M' + mx + ',' + my + ' ');
+					targetsM[i].setAttribute('d', d);
 				}
 			}
 
