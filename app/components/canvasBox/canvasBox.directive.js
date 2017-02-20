@@ -61,55 +61,61 @@
 		$scope.activeState = null;
 		$scope.activeStateName = null;
 
+		$scope.getCanvas = function () {
+			return document.getElementById($scope.tabs[$scope.current].id);
+		};
+
 		$scope.transitionMode = new (function () {
 			var that = this,
 				target = null,
-				scale = 0;
-
-			var backdrop = angular.element('<md-backdrop class="md-menu-backdrop md-click-catcher"></md-backdrop>')[0];
-			backdrop.addEventListener('click', click);
+				canvas = null,
+				scale = 0,
+				r = 0,
+				C = { x: 0, y: 0 };
 
 			that.enabled = false;
 
 			that.start = function (t) {
 				that.enabled = true;
 				target = t;
+				canvas = $scope.getCanvas();
 				scale = $scope.tabs[$scope.current].scale;
+				r = $scope.tabs[$scope.current].stateRadius;
+				C.x = parseFloat($scope.activeState.use.getAttribute('x'));
+				C.y = parseFloat($scope.activeState.use.getAttribute('y'));
 				document.addEventListener('mousemove', mouseMove);
-				//document.body.appendChild(backdrop);
-
+				canvas.addEventListener('click', click);
 			};
 
 			that.stop = function () {
 				that.enabled = false;
+				$scope.$apply();
 				console.log('stop');
 			};
 
 			function mouseMove(event) {
 				var x = event.movementX / scale,
-					y = event.movementY / scale;
-
-				var d = target.getAttribute('d'),
-						L = d.match(/L[-\d\.]*,[-\d\.]*/)[0],
-						l = L.substring(1).split(','),
-						lx = parseFloat(l[0]) + x,
-						ly = parseFloat(l[1]) + y;
+					y = event.movementY / scale,
+					d = target.getAttribute('d'),
+					M = d.match(/M[-\d\.e]*,[-\d\.e]*\s/)[0],
+					L = d.match(/L[-\d\.e]*,[-\d\.e]*/)[0],
+					l = L.substring(1).split(','),
+					lx = parseFloat(l[0]) + x,
+					ly = parseFloat(l[1]) + y,
+					m = transform(C, { x: lx, y: ly }, r);
+				
+				d = d.replace(M, 'M' + m.x + ',' + m.y + ' ');
 				d = d.replace(L, 'L' + lx + ',' + ly);
 				target.setAttribute('d', d);
 			}
 
 			function click(event) {
-				console.log('click');
-				//event.preventDefault();
-				//that.stop();
-				//document.removeEventListener('mousemove', mouseMove);
-				//document.removeEventListener('click', click);
+				event.preventDefault();
+				that.stop();
+				document.removeEventListener('mousemove', mouseMove);
+				canvas.removeEventListener('click', click);
 			}
 		});
-
-		$scope.getCanvas = function () {
-			return document.getElementById($scope.tabs[$scope.current].id);
-		};
 
 		$scope.addTab = function () {
 			$scope.tabs.push(new Tab(++$scope.tabsCount));
@@ -120,6 +126,8 @@
 		};
 
 		$scope.drawState = function (event, tab) {
+			if ($scope.transitionMode.enabled) return;
+
 			var state = new State(tab.index, ++tab.statesCount, $scope.preferences.stateNamePrefix + (tab.statesCount - 1));
 
 			var circle = document.createElementNS(src, 'circle');
@@ -165,8 +173,11 @@
 				'x': event.offsetX / $scope.tabs[$scope.current].scale,
 				'y': event.offsetY / $scope.tabs[$scope.current].scale,
 				'class': 'state',
+				'ng-class': '{"transition-mode": transitionMode.enabled}',
 				'ng-attr-transform': 'scale({{tabs[current].scale}})',
-				'ng-click': 'openMenu($event)'
+				'ng-click': 'openMenu($event)',
+				'ng-mouseenter': 'transitionMode.enabled ? setHoverState(' + state.id + ') : 0',
+				'ng-mouseleave': 'transitionMode.enabled ? dropHoverState() : 0'
 			});
 			use.draggable();
 
@@ -199,6 +210,7 @@
 		};
 
 		$scope.openMenu = function (event) {
+			if ($scope.transitionMode.enabled) return;
 			$scope.hasDragged ? $scope.hasDragged = false : menuCtrl.open(event);
 		};
 
@@ -214,20 +226,20 @@
 
 		$scope.buildTransition = function (event) {
 			var tab = $scope.tabs[$scope.current],
-			transition = new Transition(tab.index, ++tab.transitionsCount),
-			mx = parseInt($scope.activeState.use.getAttribute('x')) + tab.stateRadius,
-			my = $scope.activeState.use.getAttribute('y'),
-			clientRect = $scope.getCanvas().getBoundingClientRect(),
-			lx = event.x - clientRect.left,
-			ly = event.y - clientRect.top;
-
-			console.log(event);
-			console.log($scope.getCanvas().getBoundingClientRect());
+				transition = new Transition(tab.index, ++tab.transitionsCount),
+				clientRect = $scope.getCanvas().getBoundingClientRect(),
+				lx = (event.x - clientRect.left) / tab.scale,
+				ly = (event.y - clientRect.top) / tab.scale,
+				C = {
+					x: parseFloat($scope.activeState.use.getAttribute('x')),
+					y: parseFloat($scope.activeState.use.getAttribute('y'))
+				},
+				m = transform(C, { x: lx, y: ly }, tab.stateRadius);
 
 			var path = document.createElementNS(src, 'path');
 			path.setAttributes({
 				'id': transition.id + '-' + 'def',
-				'ng-attr-d': 'M' + mx + ',' + my + ' L' + lx + ',' + ly,
+				'ng-attr-d': 'M' + m.x + ',' + m.y + ' L' + lx + ',' + ly,
 				'fill': 'none',
 				'ng-attr-stroke': '{{preferences.pathColor}}',
 				'ng-attr-stroke-width': '{{preferences.pathWidth}}px',
@@ -256,6 +268,18 @@
 			canvas.appendChild(transition.use);
 
 			$scope.transitionMode.start(defs.firstElementChild);
+		};
+
+		$scope.bindTransition = function () {
+			console.log('bind');
+		};
+
+		$scope.setHoverState = function (id) {
+			console.log('set');
+		};
+
+		$scope.dropHoverState = function () {
+			console.log('drop');
 		};
 
 		$scope.$watch('activeState.name', function (newValue, oldValue) {
@@ -298,6 +322,15 @@
 			this.use = null;
 		}
 
+		function transform(C, L, r) {
+			var a = Math.atan((L.x - C.x) / (L.y - C.y)),
+				k = L.y >= C.y ? 1 : -1;
+			return {
+				x: r * Math.sin(a) * k + C.x,
+				y: r * Math.cos(a) * k + C.y
+			};
+		}
+
 		Element.prototype.setAttributes = function (attrs) {
 			for (var key in attrs)
 				this.setAttribute(key, attrs[key]);
@@ -306,11 +339,14 @@
 		Element.prototype.draggable = function () {
 			var that = this,
 				targetsM = [],
-				scale = 0;
+				scale = 0,
+				r = 0;
 
 			that.addEventListener('mousedown', function (event) {
+				if ($scope.transitionMode.enabled) return;
 				targetsM = $scope.tabs[$scope.current].states.getById(event.target.getAttribute('id')).targetsM;
 				scale = $scope.tabs[$scope.current].scale;
+				r = $scope.tabs[$scope.current].stateRadius;
 				event.preventDefault();
 				document.addEventListener('mousemove', mouseMove);
 				document.addEventListener('mouseup', mouseUp);
@@ -320,20 +356,28 @@
 				$scope.hasDragged = true;
 
 				var x = event.movementX / scale,
-					y = event.movementY / scale;
+					y = event.movementY / scale,
+					C = {
+						x: that.x.animVal.value + x,
+						y: that.y.animVal.value + y
+					};
 
-				that.setAttribute('x', that.x.animVal.value + x);
-				that.setAttribute('y', that.y.animVal.value + y);
+				that.setAttribute('x', C.x);
+				that.setAttribute('y', C.y);
 
 				for (var i in targetsM) {
 					if (typeof targetsM[i] === 'function')
 						continue;
+
 					var d = targetsM[i].getAttribute('d'),
-						M = d.match(/M[-\d\.]*,[-\d\.]*\s/)[0],
-						m = M.substring(1).trim().split(','),
-						mx = parseFloat(m[0]) + x,
-						my = parseFloat(m[1]) + y;
-					d = d.replace(M, 'M' + mx + ',' + my + ' ');
+						M = d.match(/M[-\d\.e]*,[-\d\.e]*\s/)[0],
+						L = d.match(/L[-\d\.e]*,[-\d\.e]*/)[0],
+						l = L.substring(1).split(','),
+						lx = parseFloat(l[0]) + x,
+						ly = parseFloat(l[1]) + y,
+						m = transform(C, { x: lx, y: ly }, r);
+
+					d = d.replace(M, 'M' + m.x + ',' + m.y + ' ');
 					targetsM[i].setAttribute('d', d);
 				}
 			}

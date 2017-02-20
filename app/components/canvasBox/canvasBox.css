@@ -90,6 +90,10 @@ svg.canvas circle {
 	cursor: pointer;
 }
 
+.state.transition-mode {
+	cursor: default;
+}
+
 .transition {
 
 }
