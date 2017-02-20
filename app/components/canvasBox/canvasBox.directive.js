@@ -60,6 +60,8 @@
 		$scope.hasDragged = false;
 		$scope.activeState = null;
 		$scope.activeStateName = null;
+		$scope.activeTransition = null;
+		$scope.hoverState = null;
 
 		$scope.getCanvas = function () {
 			return document.getElementById($scope.tabs[$scope.current].id);
@@ -71,6 +73,8 @@
 				canvas = null,
 				scale = 0,
 				r = 0,
+				clientRect = null,
+				activeState = null,
 				C = { x: 0, y: 0 };
 
 			that.enabled = false;
@@ -81,8 +85,10 @@
 				canvas = $scope.getCanvas();
 				scale = $scope.tabs[$scope.current].scale;
 				r = $scope.tabs[$scope.current].stateRadius;
-				C.x = parseFloat($scope.activeState.use.getAttribute('x'));
-				C.y = parseFloat($scope.activeState.use.getAttribute('y'));
+				clientRect = canvas.getBoundingClientRect();
+				activeState = $scope.activeState;
+				C.x = parseFloat(activeState.use.getAttribute('x'));
+				C.y = parseFloat(activeState.use.getAttribute('y'));
 				document.addEventListener('mousemove', mouseMove);
 				canvas.addEventListener('click', click);
 			};
@@ -90,22 +96,28 @@
 			that.stop = function () {
 				that.enabled = false;
 				$scope.$apply();
-				console.log('stop');
+				if ($scope.hoverState)
+					$scope.bindTransition(activeState);
+				else {
+					canvas.removeChild($scope.activeTransition.use);
+					canvas.removeChild($scope.activeTransition.defs);
+					activeState.targetsM.splice(activeState.targetsM.indexOf($scope.activeTransition.defs.firstElementChild));
+					activeState.transitions.splice(activeState.transitions.indexOf($scope.activeTransition), 1);
+					$scope.tabs[$scope.current].transitions.splice($scope.tabs[$scope.current].transitions.indexOf($scope.activeTransition), 1);
+					$scope.activeTransition = null;
+				}
 			};
 
 			function mouseMove(event) {
-				var x = event.movementX / scale,
-					y = event.movementY / scale,
+				var x = (event.x - clientRect.left) / scale,
+					y = (event.y - clientRect.top) / scale,
 					d = target.getAttribute('d'),
 					M = d.match(/M[-\d\.e]*,[-\d\.e]*\s/)[0],
 					L = d.match(/L[-\d\.e]*,[-\d\.e]*/)[0],
-					l = L.substring(1).split(','),
-					lx = parseFloat(l[0]) + x,
-					ly = parseFloat(l[1]) + y,
-					m = transform(C, { x: lx, y: ly }, r);
-				
-				d = d.replace(M, 'M' + m.x + ',' + m.y + ' ');
-				d = d.replace(L, 'L' + lx + ',' + ly);
+					m = transform(C, { x: x, y: y }, r),
+					l = transform({ x: x, y: y }, C, 10);
+
+				d = d.replace(M, 'M' + m.x + ',' + m.y + ' ').replace(L, 'L' + l.x + ',' + l.y);
 				target.setAttribute('d', d);
 			}
 
@@ -176,7 +188,7 @@
 				'ng-class': '{"transition-mode": transitionMode.enabled}',
 				'ng-attr-transform': 'scale({{tabs[current].scale}})',
 				'ng-click': 'openMenu($event)',
-				'ng-mouseenter': 'transitionMode.enabled ? setHoverState(' + state.id + ') : 0',
+				'ng-mouseenter': 'transitionMode.enabled ? setHoverState("' + state.id + '") : 0',
 				'ng-mouseleave': 'transitionMode.enabled ? dropHoverState() : 0'
 			});
 			use.draggable();
@@ -206,6 +218,7 @@
 			}
 
 			$scope.tabs[$scope.current].states.splice($scope.tabs[$scope.current].states.indexOf($scope.activeState), 1);
+			$scope.activeState = null;
 			menuCtrl.close();
 		};
 
@@ -267,19 +280,37 @@
 			canvas.appendChild(transition.defs);
 			canvas.appendChild(transition.use);
 
+			$scope.activeTransition = transition;
 			$scope.transitionMode.start(defs.firstElementChild);
 		};
 
-		$scope.bindTransition = function () {
-			console.log('bind');
+		$scope.bindTransition = function (activeState) {
+			var C = { x: parseFloat($scope.hoverState.use.getAttribute('x')),
+					  y: parseFloat($scope.hoverState.use.getAttribute('y')) },
+				L = { x: parseFloat(activeState.use.getAttribute('x')),
+					  y: parseFloat(activeState.use.getAttribute('y')) },
+				path = $scope.activeTransition.defs.firstElementChild,
+				r = $scope.tabs[$scope.current].stateRadius,
+				d = path.getAttribute('d'),
+				M = d.match(/M[-\d\.e]*,[-\d\.e]*\s/)[0],
+				P = d.match(/L[-\d\.e]*,[-\d\.e]*/)[0],
+				l = transform(C, L, r + 10),
+				m = transform(L, C, r);
+
+			d = d.replace(M, 'M' + m.x + ',' + m.y + ' ').replace(P, 'L' + l.x + ',' + l.y);
+			path.setAttribute('d', d);
+
+			$scope.hoverState.transitions.push($scope.activeTransition);
+			$scope.hoverState = null;
+			$scope.activeTransition = null;
 		};
 
 		$scope.setHoverState = function (id) {
-			console.log('set');
+			$scope.hoverState = $scope.tabs[$scope.current].states.getById(id);
 		};
 
 		$scope.dropHoverState = function () {
-			console.log('drop');
+			$scope.hoverState = null;
 		};
 
 		$scope.$watch('activeState.name', function (newValue, oldValue) {
