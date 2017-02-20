@@ -154,7 +154,7 @@
 				'class': 'non-selectable',
 				'ng-attr-fill': '{{tabs[current].stateNameColor}}',
 				'text-anchor': 'middle',
-				'alignment-baseline': 'middle'
+				'alignment-baseline': 'central'
 			});
 
 			var startPath = document.createElementNS(src, 'path'),
@@ -241,23 +241,28 @@
 			var tab = $scope.tabs[$scope.current],
 				transition = new Transition(tab.index, ++tab.transitionsCount),
 				clientRect = $scope.getCanvas().getBoundingClientRect(),
-				lx = (event.x - clientRect.left) / tab.scale,
-				ly = (event.y - clientRect.top) / tab.scale,
-				C = {
+				M = {
 					x: parseFloat($scope.activeState.use.getAttribute('x')),
 					y: parseFloat($scope.activeState.use.getAttribute('y'))
 				},
-				m = transform(C, { x: lx, y: ly }, tab.stateRadius);
+				L = {
+					x: (event.x - clientRect.left) / tab.scale,
+					y: (event.y - clientRect.top) / tab.scale
+				},
+				QPoints = quadratic(M, L),
+				m = transform(M, L, tab.stateRadius),
+				l = transform(L, M, 10);
 
 			var path = document.createElementNS(src, 'path');
 			path.setAttributes({
 				'id': transition.id + '-' + 'def',
-				'ng-attr-d': 'M' + m.x + ',' + m.y + ' L' + lx + ',' + ly,
+				'ng-attr-d': 'M' + m.x + ',' + m.y + ' Q' + QPoints.lQ.x + ',' + QPoints.lQ.y + ',' + QPoints.cQ.x + ',' + QPoints.cQ.y + ' Q' + QPoints.rQ.x + ',' + QPoints.rQ.y + ',' + l.x + ',' + l.y,
 				'fill': 'none',
 				'ng-attr-stroke': '{{preferences.pathColor}}',
 				'ng-attr-stroke-width': '{{preferences.pathWidth}}px',
-				'marker-end': 'url(#arrow)'
-			});
+				'marker-end': 'url(#arrow-marker)',
+				'marker-mid': 'url(#symbol-marker)'
+		});
 
 			var defs = document.createElementNS(src, 'defs');
 			defs.appendChild($compile(path)($scope)[0]);
@@ -281,7 +286,7 @@
 			canvas.appendChild(transition.use);
 
 			$scope.activeTransition = transition;
-			$scope.transitionMode.start(defs.firstElementChild);
+			//$scope.transitionMode.start(defs.firstElementChild);
 		};
 
 		$scope.bindTransition = function (activeState) {
@@ -360,6 +365,22 @@
 				x: r * Math.sin(a) * k + C.x,
 				y: r * Math.cos(a) * k + C.y
 			};
+		}
+
+		function quadratic(M, L) {
+			var cQ = {
+				x: M.x + (L.x - M.x) / 2,
+				y: M.y + (L.y - M.y) / 2
+			};
+			var lQ = {
+				x: M.x + (cQ.x - M.x) / 2,
+				y: M.y + (cQ.y - M.y) / 2
+			};
+			var rQ = {
+				x: M.x + (L.x - cQ.x) / 2,
+				y: M.y + (L.y - cQ.y) / 2
+			};
+			return { lQ: lQ, cQ: cQ, rQ: rQ };
 		}
 
 		Element.prototype.setAttributes = function (attrs) {

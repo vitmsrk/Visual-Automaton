@@ -24,6 +24,7 @@
 			defaultStateColor: '#8f9ca2',
 			startStateColor: '#0277BD',
 			acceptStateColor: '#388E3C',
+			symbolMarkercolor: '#8f9ca2',
 			stateRadius: 25,
 			stateNamePrefix: 'q',
 			stateNameColor: '#fff',

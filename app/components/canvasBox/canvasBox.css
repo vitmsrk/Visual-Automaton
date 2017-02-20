@@ -94,10 +94,6 @@ svg.canvas circle {
 	cursor: default;
 }
 
-.transition {
-
-}
-
 #scale-slider {
 	height: 32px;
 	bottom: 7px;
