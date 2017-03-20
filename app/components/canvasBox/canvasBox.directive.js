@@ -13,7 +13,7 @@
 		}
 	}
 
-	function canvasBoxCtrl($scope, $compile, $mdMenu) {
+	function canvasBoxCtrl($scope, $compile, $mdMenu, $mdDialog) {
 		const src = 'http://www.w3.org/2000/svg';
 		const xlink = 'http://www.w3.org/1999/xlink';
 
@@ -316,6 +316,17 @@
 
 		$scope.dropHoverState = function () {
 			$scope.hoverState = null;
+		};
+
+		$scope.openTransitionTable = function (event) {
+			$mdDialog.show({
+				controller: transitionTableCtrl,
+				templateUrl: 'app/components/transitionTable/transitionTable.html',
+				parent: angular.element(document.body),
+				targetEvent: event,
+				clickOutsideToClose: true
+			})
+			.then(function (answer) { }, function () { });
 		};
 
 		$scope.$watch('activeState.name', function (newValue, oldValue) {

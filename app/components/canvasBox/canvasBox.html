@@ -15,8 +15,12 @@
 			</md-tab-label>
 		</md-tab>
 	</md-tabs>
-	<md-toolbar class="md-primary md-hue-1" md-whiteframe="2">
+	<md-toolbar id="bottom-toolbar" class="md-primary md-hue-1" md-whiteframe="2">
 		<div class="md-toolbar-tools">
+			<md-button class="md-raised" ng-click="openTransitionTable($event)">
+				<md-icon><i class="material-icons md-18">grid_on</i></md-icon>&nbsp;
+				{{translation.TRANSITION_TABLE}}
+			</md-button> 
 			<span md-truncate flex class="md-hue-1"></span>
 			<md-slider-container>
 				<span id="scale-value" class="non-selectable">{{tabs[current].scale * 100 | number: 0}}%</span>

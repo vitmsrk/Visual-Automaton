@@ -1,11 +1,14 @@
 ﻿{
-	"NEW_TAB": "New tab",
-	"CLOSE_TAB": "Close tab",
-	"SCALE": "Scale",
-	"REMOVE": "Remove",
-	"NAME": "Name",
-	"START": "Start",
-	"ACCEPT": "Accept",
-	"REGULAR_EXPRESSION": "Regular expression",
-	"TRANSITION": "Transition"
+  "NEW_TAB": "New tab",
+  "CLOSE_TAB": "Close tab",
+  "SCALE": "Scale",
+  "REMOVE": "Remove",
+  "NAME": "Name",
+  "START": "Start",
+  "ACCEPT": "Accept",
+  "REGULAR_EXPRESSION": "Regular expression",
+  "TRANSITION": "Transition",
+  "TRANSITION_TABLE": "Transition table",
+  "CANCEL": "Cancel",
+  "APPLY": "Apply"
 }

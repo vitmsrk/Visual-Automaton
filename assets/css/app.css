@@ -18,3 +18,12 @@ body {
 #layout {
 	height: calc(100% - 41px);
 }
+
+#bottom-toolbar .md-button {
+	min-height: 26px;
+	line-height: 26px;
+}
+
+#bottom-toolbar .md-button .material-icons {
+	font-size: 22px;
+}
