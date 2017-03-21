@@ -364,9 +364,35 @@
 		function Transition(tabIndex, index) {
 			this.id = 'transition-' + tabIndex + '-' + index;
 			this.index = index;
+			this.symbols = [];
 			this.name = null;
 			this.defs = null;
 			this.use = null;
+		}
+
+		function TransitionTable(tab) {
+			var that = this;
+			that.tab = tab;
+
+			that.update = function () {
+				that.alphabet = [];
+				that.rows = [];
+
+				for (var i in that.tab.transitions) {
+					var transition = that.tab.transitions[i];
+					for (var j in transition.symbols)
+						if (that.alphabet.indexOf(transition.symbols[i]) == -1)
+							that.alphabet.push(transition.symbols[i]);
+				}
+
+				for (var i in that.tab.states) {
+					var state = that.tab.states[i];
+					that.rows[state.name] = [];
+					for (var j in that.alphabet) {
+						that.rows[state.name][that.alphabet[j]] = [];
+					}
+				}
+			};
 		}
 
 		function transform(C, L, r) {
