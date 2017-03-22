@@ -382,6 +382,8 @@
 		};
 
 		$scope.openTransitionTable = function (event) {
+			$scope.tabs[$scope.current].transitionTable.update();
+
 			$mdDialog.show({
 				controller: transitionTableCtrl,
 				templateUrl: 'app/components/transitionTable/transitionTable.html',
@@ -390,6 +392,8 @@
 				clickOutsideToClose: true
 			})
 			.then(function (answer) { }, function () { });
+
+			console.log($scope.tabs[$scope.current].transitionTable);
 		};
 
 		$scope.$watch('activeState.name', function (newValue, oldValue) {
@@ -410,6 +414,7 @@
 			this.acceptStateColor = $scope.preferences.acceptStateColor;
 			this.stateRadius = $scope.preferences.stateRadius;
 			this.stateNameColor = $scope.preferences.stateNameColor;
+			this.transitionTable = new TransitionTable(this);
 		}
 
 		function State(tabIndex, index, name) {
@@ -456,26 +461,37 @@
 
 				for (var i in that.tab.transitions) {
 					var transition = that.tab.transitions[i];
-					for (var j in transition.symbols)
-						if (that.alphabet.indexOf(transition.symbols[i]) == -1)
-							that.alphabet.push(transition.symbols[i]);
+					if (typeof transition === 'function') continue;
+					for (var j in transition.symbols) {
+						var symbol = transition.symbols[j];
+						if (typeof symbol === 'function') continue;
+						if (that.alphabet.indexOf(symbol) == -1)
+							that.alphabet.push(symbol);
+					}
 				}
 
 				for (var i in that.tab.states) {
 					var state = that.tab.states[i];
+					if (typeof state === 'function') continue;
 					that.rows[state.name] = [];
 					for (var j in that.alphabet) {
 						var symbol = that.alphabet[j];
+						if (typeof symbol === 'function') continue;
 						that.rows[state.name][symbol] = [];
 						for (var k in state.startTransitions) {
 							var transition = state.startTransitions[k];
-							for (var l in transition.symbols)
+							if (typeof transition === 'function') continue;
+							for (var l in transition.symbols) {
+								if (typeof transition.symbols[l] === 'function') continue;
 								if (transition.symbols[l] == symbol)
 									that.rows[state.name][symbol].push(transition.endState);
+							}
 						}
 					}
 				}
 			};
+
+			that.update();
 		}
 
 		function transform(C, L, r) {

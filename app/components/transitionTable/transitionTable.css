@@ -1,2 +1,8 @@
-﻿body {
+﻿md-dialog-content.transition-table-content {
+	min-width: 640px;
+    min-height: 350px;
+}
+
+#translation-table tr {
+	height: 30px;
 }
