@@ -10,5 +10,10 @@
   "TRANSITION": "Transition",
   "TRANSITION_TABLE": "Transition table",
   "CANCEL": "Cancel",
-  "APPLY": "Apply"
+  "APPLY": "Apply",
+  "TRANSITION_PROMPT_TITLE": "Transition characters",
+  "TRANSITION_PROMPT_MESSAGE": "Enter a few characters separated by comma:",
+  "TRANSITION_PROMPT_PLACEHOLDER": "example: a,b,c",
+  "TRANSITION_PROMPT_OK": "Accept",
+  "TRANSITION_PROMPT_CANCEL": "Cancel"
 }

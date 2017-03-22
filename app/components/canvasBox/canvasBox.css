@@ -151,3 +151,7 @@ svg.canvas circle {
 .state-menu-container md-checkbox .md-label {
 	margin-left: 27px;
 }
+
+svg.canvas textPath {
+	baseline-shift: 45%;
+}

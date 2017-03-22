@@ -27,3 +27,7 @@ body {
 #bottom-toolbar .md-button .material-icons {
 	font-size: 22px;
 }
+
+h2.md-title {
+	font-weight: 700;
+}

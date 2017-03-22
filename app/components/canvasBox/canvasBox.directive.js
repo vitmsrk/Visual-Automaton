@@ -13,7 +13,8 @@
 		}
 	}
 
-	function canvasBoxCtrl($scope, $compile, $mdMenu, $mdDialog) {
+	function canvasBoxCtrl($scope, $compile, $mdMenu, $mdDialog)
+	{
 		const src = 'http://www.w3.org/2000/svg';
 		const xlink = 'http://www.w3.org/1999/xlink';
 
@@ -101,8 +102,7 @@
 				else {
 					canvas.removeChild($scope.activeTransition.use);
 					canvas.removeChild($scope.activeTransition.defs);
-					activeState.targetsM.splice(activeState.targetsM.indexOf($scope.activeTransition.defs.firstElementChild));
-					activeState.transitions.splice(activeState.transitions.indexOf($scope.activeTransition), 1);
+					activeState.startTransitions.splice(activeState.startTransitions.indexOf($scope.activeTransition), 1);
 					$scope.tabs[$scope.current].transitions.splice($scope.tabs[$scope.current].transitions.indexOf($scope.activeTransition), 1);
 					$scope.activeTransition = null;
 				}
@@ -166,7 +166,7 @@
 				'fill': 'none',
 				'ng-attr-stroke': '{{preferences.pathColor}}',
 				'ng-attr-stroke-width': '{{preferences.pathWidth}}px',
-				'marker-end': 'url(#arrow)'
+				'marker-end': 'url(#arrow-marker)'
 			});
 
 			var g = document.createElementNS(src, 'g');
@@ -208,11 +208,22 @@
 			canvas.removeChild($scope.activeState.use);
 			canvas.removeChild($scope.activeState.defs);
 
-			for (var i in $scope.activeState.transitions) {
-				var transition = $scope.activeState.transitions[i];
+			for (var i in $scope.activeState.startTransitions) {
+				var transition = $scope.activeState.startTransitions[i];
 				if (transition instanceof Transition) {
 					canvas.removeChild(transition.use);
 					canvas.removeChild(transition.defs);
+					transition.endState.endTransitions.splice(transition.endState.endTransitions.indexOf(transition), 1);
+					$scope.tabs[$scope.current].transitions.splice($scope.tabs[$scope.current].transitions.indexOf(transition), 1);
+				}
+			}
+
+			for (var i in $scope.activeState.endTransitions) {
+				var transition = $scope.activeState.endTransitions[i];
+				if (transition instanceof Transition) {
+					canvas.removeChild(transition.use);
+					canvas.removeChild(transition.defs);
+					transition.startState.startTransitions.splice(transition.startState.startTransitions.indexOf(transition), 1);
 					$scope.tabs[$scope.current].transitions.splice($scope.tabs[$scope.current].transitions.indexOf(transition), 1);
 				}
 			}
@@ -249,44 +260,64 @@
 					x: (event.x - clientRect.left) / tab.scale,
 					y: (event.y - clientRect.top) / tab.scale
 				},
-				QPoints = quadratic(M, L),
+				//QPoints = quadratic(M, L),
 				m = transform(M, L, tab.stateRadius),
 				l = transform(L, M, 10);
 
 			var path = document.createElementNS(src, 'path');
 			path.setAttributes({
-				'id': transition.id + '-' + 'def',
-				'ng-attr-d': 'M' + m.x + ',' + m.y + ' Q' + QPoints.lQ.x + ',' + QPoints.lQ.y + ',' + QPoints.cQ.x + ',' + QPoints.cQ.y + ' Q' + QPoints.rQ.x + ',' + QPoints.rQ.y + ',' + l.x + ',' + l.y,
+				'id': transition.id + '-' + 'path',
+				//'ng-attr-d': 'M' + m.x + ',' + m.y + ' Q' + QPoints.lQ.x + ',' + QPoints.lQ.y + ',' + QPoints.cQ.x + ',' + QPoints.cQ.y + ' Q' + QPoints.rQ.x + ',' + QPoints.rQ.y + ',' + l.x + ',' + l.y,
+				'ng-attr-d': 'M' + m.x + ',' + m.y + ' L' + l.x + ',' + l.y,
 				'fill': 'none',
 				'ng-attr-stroke': '{{preferences.pathColor}}',
 				'ng-attr-stroke-width': '{{preferences.pathWidth}}px',
-				'marker-end': 'url(#arrow-marker)',
-				'marker-mid': 'url(#symbol-marker)'
-		});
+				'marker-end': 'url(#arrow-marker)'
+				//'marker-mid': 'url(#symbol-marker)'
+			});
+
+			var textPath = document.createElementNS(src, 'textPath');
+			textPath.setAttributeNS(xlink, 'href', '#' + path.getAttribute('id'));
+			textPath.setAttributes({
+				'startOffset': '50%',
+				'class': 'non-selectable',
+			});
+
+			var text = document.createElementNS(src, 'text');
+			text.setAttributes({
+				'text-anchor': 'middle'
+			});
+			text.appendChild($compile(textPath)($scope)[0]);
+
+			var g = document.createElementNS(src, 'g');
+			g.setAttributes({ 'id': transition.id + '-' + 'def' });
+			g.appendChild($compile(path)($scope)[0]);
+			g.appendChild($compile(text)($scope)[0]);
 
 			var defs = document.createElementNS(src, 'defs');
-			defs.appendChild($compile(path)($scope)[0]);
-			$scope.activeState.targetsM.push(defs.firstElementChild);
+			defs.appendChild($compile(g)($scope)[0]);
 
 			var use = document.createElementNS(src, 'use');
-			use.setAttributeNS(xlink, 'href', '#' + path.getAttribute('id'));
+			use.setAttributeNS(xlink, 'href', '#' + g.getAttribute('id'));
 			use.setAttributes({
 				'id': transition.id,
 				'class': 'transition',
 				'ng-attr-transform': 'scale({{tabs[current].scale}})'
 			});
 
+			transition.startState = $scope.activeState;
 			transition.defs = $compile(defs)($scope)[0];
 			transition.use = $compile(use)($scope)[0];
+			transition.textPath = transition.defs.firstElementChild.childNodes[1].firstElementChild;
 			tab.transitions.push(transition);
-			$scope.activeState.transitions.push(transition);
+			$scope.activeState.startTransitions.push(transition);
 
 			var canvas = $scope.getCanvas();
 			canvas.appendChild(transition.defs);
 			canvas.appendChild(transition.use);
 
 			$scope.activeTransition = transition;
-			//$scope.transitionMode.start(defs.firstElementChild);
+			$scope.transitionMode.start(g.firstElementChild);
 		};
 
 		$scope.bindTransition = function (activeState) {
@@ -294,7 +325,7 @@
 					  y: parseFloat($scope.hoverState.use.getAttribute('y')) },
 				L = { x: parseFloat(activeState.use.getAttribute('x')),
 					  y: parseFloat(activeState.use.getAttribute('y')) },
-				path = $scope.activeTransition.defs.firstElementChild,
+				path = $scope.activeTransition.defs.firstElementChild.firstElementChild,
 				r = $scope.tabs[$scope.current].stateRadius,
 				d = path.getAttribute('d'),
 				M = d.match(/M[-\d\.e]*,[-\d\.e]*\s/)[0],
@@ -305,9 +336,41 @@
 			d = d.replace(M, 'M' + m.x + ',' + m.y + ' ').replace(P, 'L' + l.x + ',' + l.y);
 			path.setAttribute('d', d);
 
-			$scope.hoverState.transitions.push($scope.activeTransition);
-			$scope.hoverState = null;
-			$scope.activeTransition = null;
+			$mdDialog.show($mdDialog.prompt()
+				.title($scope.translation.TRANSITION_PROMPT_TITLE)
+				.textContent($scope.translation.TRANSITION_PROMPT_MESSAGE)
+				.placeholder($scope.translation.TRANSITION_PROMPT_PLACEHOLDER)
+				.ariaLabel("Transition characters")
+				.ok($scope.translation.TRANSITION_PROMPT_OK)
+				.cancel($scope.translation.TRANSITION_PROMPT_CANCEL)
+			).then(function (result) {
+				if (!result) {
+					cancelBind();
+					return;
+				}
+				$scope.activeTransition.symbols = result.split(',');
+				endBind();
+			}, function () {
+				cancelBind();
+			});
+
+			function endBind() {
+				$scope.activeTransition.textPath.innerHTML = $scope.activeTransition.getString();
+				$scope.activeTransition.endState = $scope.hoverState;
+				$scope.hoverState.endTransitions.push($scope.activeTransition);
+				$scope.hoverState = null;
+				$scope.activeTransition = null;
+			}
+
+			function cancelBind() {
+				var canvas = $scope.getCanvas();
+				canvas.removeChild($scope.activeTransition.use);
+				canvas.removeChild($scope.activeTransition.defs);
+				$scope.tabs[$scope.current].transitions.splice($scope.tabs[$scope.current].transitions.indexOf($scope.activeTransition), 1);
+				activeState.startTransitions.splice(activeState.startTransitions.indexOf($scope.activeTransition), 1);
+				$scope.hoverState = null;
+				$scope.activeTransition = null;
+			}
 		};
 
 		$scope.setHoverState = function (id) {
@@ -357,17 +420,30 @@
 			this.accept = false;
 			this.defs = null;
 			this.use = null;
-			this.transitions = [];
-			this.targetsM = [];
+			this.startTransitions = [];
+			this.endTransitions = [];
 		}
 
 		function Transition(tabIndex, index) {
+			var that = this;
 			this.id = 'transition-' + tabIndex + '-' + index;
 			this.index = index;
 			this.symbols = [];
+			this.startState = null;
+			this.endState = null;
 			this.name = null;
 			this.defs = null;
 			this.use = null;
+			this.textPath = null;
+			this.getString = function () {
+				var s = '';
+				for (var i in that.symbols) {
+					if (typeof that.symbols[i] === 'function')
+						continue;
+					s += i == 0 ? that.symbols[i] : ', ' + that.symbols[i];
+				}
+				return s;
+			};
 		}
 
 		function TransitionTable(tab) {
@@ -389,7 +465,14 @@
 					var state = that.tab.states[i];
 					that.rows[state.name] = [];
 					for (var j in that.alphabet) {
-						that.rows[state.name][that.alphabet[j]] = [];
+						var symbol = that.alphabet[j];
+						that.rows[state.name][symbol] = [];
+						for (var k in state.startTransitions) {
+							var transition = state.startTransitions[k];
+							for (var l in transition.symbols)
+								if (transition.symbols[l] == symbol)
+									that.rows[state.name][symbol].push(transition.endState);
+						}
 					}
 				}
 			};
@@ -427,15 +510,16 @@
 
 		Element.prototype.draggable = function () {
 			var that = this,
-				targetsM = [],
+				state = null,
 				scale = 0,
 				r = 0;
 
 			that.addEventListener('mousedown', function (event) {
 				if ($scope.transitionMode.enabled) return;
-				targetsM = $scope.tabs[$scope.current].states.getById(event.target.getAttribute('id')).targetsM;
-				scale = $scope.tabs[$scope.current].scale;
-				r = $scope.tabs[$scope.current].stateRadius;
+				var tab = $scope.tabs[$scope.current];
+				state = tab.states.getById(event.target.getAttribute('id'));
+				scale = tab.scale;
+				r = tab.stateRadius;
 				event.preventDefault();
 				document.addEventListener('mousemove', mouseMove);
 				document.addEventListener('mouseup', mouseUp);
@@ -454,20 +538,60 @@
 				that.setAttribute('x', C.x);
 				that.setAttribute('y', C.y);
 
-				for (var i in targetsM) {
-					if (typeof targetsM[i] === 'function')
+				for (var i in state.startTransitions) {
+					var transition = state.startTransitions[i];
+
+					if (typeof transition === 'function')
 						continue;
 
-					var d = targetsM[i].getAttribute('d'),
+					var path = transition.defs.firstElementChild.firstElementChild,
+						d = path.getAttribute('d'),
 						M = d.match(/M[-\d\.e]*,[-\d\.e]*\s/)[0],
 						L = d.match(/L[-\d\.e]*,[-\d\.e]*/)[0],
+						m = M.substring(1).split(','),
 						l = L.substring(1).split(','),
-						lx = parseFloat(l[0]) + x,
-						ly = parseFloat(l[1]) + y,
-						m = transform(C, { x: lx, y: ly }, r);
+						mx = parseFloat(m[0]),
+						my = parseFloat(m[1]),
+						lx = parseFloat(l[0]),
+						ly = parseFloat(l[1]),
+						c = {
+							x: transition.endState.use.x.animVal.value,
+							y: transition.endState.use.y.animVal.value
+						};
+						
+					m = transform(C, { x: lx, y: ly }, r);
+					l = transform(c, m, r + 10);
 
-					d = d.replace(M, 'M' + m.x + ',' + m.y + ' ');
-					targetsM[i].setAttribute('d', d);
+					d = d.replace(M, 'M' + m.x + ',' + m.y + ' ').replace(L, 'L' + l.x + ',' + l.y);
+					path.setAttribute('d', d);
+				}
+
+				for (var i in state.endTransitions) {
+					var transition = state.endTransitions[i];
+
+					if (typeof transition === 'function')
+						continue;
+
+					var path = transition.defs.firstElementChild.firstElementChild,
+						d = path.getAttribute('d'),
+						M = d.match(/M[-\d\.e]*,[-\d\.e]*\s/)[0],
+						L = d.match(/L[-\d\.e]*,[-\d\.e]*/)[0],
+						m = M.substring(1).split(','),
+						l = L.substring(1).split(','),
+						mx = parseFloat(m[0]),
+						my = parseFloat(m[1]),
+						lx = parseFloat(l[0]),
+						ly = parseFloat(l[1]),
+						c = {
+							x: transition.startState.use.x.animVal.value,
+							y: transition.startState.use.y.animVal.value
+						};
+
+					l = transform(C, { x: mx, y: my }, r + 10);
+					m = transform(c, l, r);
+
+					d = d.replace(M, 'M' + m.x + ',' + m.y + ' ').replace(L, 'L' + l.x + ',' + l.y);
+					path.setAttribute('d', d);
 				}
 			}
 
