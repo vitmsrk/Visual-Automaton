@@ -1,10 +1,19 @@
 ﻿{
-	"NEW_TAB": "Нова вкладка",
-	"CLOSE_TAB": "Закрити вкладку",
-	"SCALE": "Масштаб",
-	"REMOVE": "Видалити",
-	"NAME": "Назва",
-	"INITIAL": "Початковий",
-	"FINAL": "Заключний",
-	"REGULAR_EXPRESSION": "Регулярний вираз"
+  "NEW_TAB": "Нова вкладка",
+  "CLOSE_TAB": "Закрити вкладку",
+  "SCALE": "Масштаб",
+  "REMOVE": "Видалити",
+  "NAME": "Назва",
+  "START": "Початковий",
+  "ACCEPT": "Заключний",
+  "REGULAR_EXPRESSION": "Регулярний вираз",
+  "TRANSITION": "Перехід",
+  "TRANSITION_TABLE": "Таблиця переходів",
+  "CANCEL": "Скасувати",
+  "APPLY": "Застосувати",
+  "TRANSITION_PROMPT_TITLE": "Символи переходу",
+  "TRANSITION_PROMPT_MESSAGE": "Введіть декілька симолів розділяючи їх комою:",
+  "TRANSITION_PROMPT_PLACEHOLDER": "наприклад: a,b,c",
+  "TRANSITION_PROMPT_OK": "Прийняти",
+  "TRANSITION_PROMPT_CANCEL": "Скасувати"
 }

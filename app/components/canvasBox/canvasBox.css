@@ -82,9 +82,16 @@ svg.canvas {
 	filter: drop-shadow( -5px -5px 5px #000 );
 }
 
+svg.canvas circle {
+	filter: url(#dropshadow);
+}
+
 .state {
 	cursor: pointer;
-	filter: url(#dropshadow);
+}
+
+.state.transition-mode {
+	cursor: default;
 }
 
 #scale-slider {
@@ -142,5 +149,9 @@ svg.canvas {
 }
 
 .state-menu-container md-checkbox .md-label {
-	margin-left: 28px;
+	margin-left: 27px;
+}
+
+svg.canvas textPath {
+	baseline-shift: 45%;
 }

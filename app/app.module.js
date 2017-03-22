@@ -2,6 +2,7 @@
 	'use strict';
 
 	angular.module('VisualAutomatonApp', ['ngMaterial', 'ngResource', 'ngCookies'])
+		.constant('config', { version: '0.1.7' })
 		.run(['$rootScope', '$cookies', '$resource', run])
 		.config(['$mdThemingProvider', config]);
 
@@ -21,15 +22,16 @@
 
 		$rootScope.preferences = {
 			defaultStateColor: '#8f9ca2',
-			initialStateColor: '#0277BD',
-			finalStateColor: '#388E3C',
+			startStateColor: '#0277BD',
+			acceptStateColor: '#388E3C',
+			symbolMarkercolor: '#8f9ca2',
 			stateRadius: 25,
 			stateNamePrefix: 'q',
 			stateNameColor: '#fff',
 			stateNameMaxLength: 3,
-			pathColor: '#555',
+			pathColor: '#666',
 			pathWidth: 2,
-			initialPathSize: 35
+			startPathSize: 35
 		};
 	}
 
