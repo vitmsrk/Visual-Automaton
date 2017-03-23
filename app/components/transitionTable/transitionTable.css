@@ -3,6 +3,32 @@
     min-height: 350px;
 }
 
-#translation-table tr {
-	height: 30px;
+#transition-table span {
+	text-align: center;
+	line-height: 48px;
+}
+
+#transition-table md-list-item {
+	padding: 0;
+}
+
+#transition-table .state-column {
+	width: 80px;
+}
+
+#transition-table .accept-column {
+	width: 80px;
+}
+
+#transition-table span.text-header {
+	font-weight: 600;
+}
+
+#transition-table .cell-header {
+	background-color: #eee;
+}
+
+#transition-table .start-arrow {
+	position: absolute;
+	left: 8px;
 }

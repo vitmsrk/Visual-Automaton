@@ -12,20 +12,35 @@
 
 		<md-dialog-content class="transition-table-content">
 			<div class="md-dialog-content">
-				<table id="transition-table">
-					<thead>
-						<tr>
-							<th>input</th>
-							<th ng-repeat="symbol in table.alphabet">{{symbol}}</th>
-						</tr>
-					</thead>
-					<tbody>
-						<tr ng-repeat="row in table.tab.states">
-							<td>{{row.name}}</td>
-							<td ng-repeat="symbol in table.alphabet">{{symbol}}</td>
-						</tr>
-					</tbody>
-				</table>
+				<md-list id="transition-table">
+					<md-list-item class="cell-header">
+						<span class="state-column text-header">{{translation.STATE}}</span>
+						<span ng-repeat="symbol in table.alphabet" class="text-header" flex>'{{symbol}}'</span>
+						<span ng-if="!table.alphabet.length" flex></span>
+						<span class="text-header accept-column">{{translation.ACCEPT}}</span>
+					</md-list-item>
+					<md-divider></md-divider>
+					<div ng-repeat="state in table.tab.states">
+						<md-list-item>
+							<span class="cell-header state-column text-header">
+								<span ng-if="state.start" class="start-arrow">&#129106;&nbsp;</span>
+								<span>{{state.name}}</span>
+							</span>
+							<span ng-repeat="symbol in table.alphabet" flex>
+								<span ng-repeat="item in table.rows[state.name][symbol]">
+									<span ng-if="$first">{</span>
+									<span ng-if="!$first">,</span>
+									<span>{{item.name}}</span>
+									<span ng-if="$last">}</span>
+								</span>
+								<span ng-if="!table.rows[state.name][symbol].length">{{preferences.emptySetSymbol}}</span>
+							</span>
+							<span ng-if="!table.alphabet.length" flex></span>
+							<span class="accept-column">{{state.accept ? translation.YES : translation.NO | lowercase}}</span>
+						</md-list-item>
+						<md-divider></md-divider>
+					</div>
+				</md-list>
 			</div>
 		</md-dialog-content>
 

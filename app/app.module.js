@@ -31,7 +31,8 @@
 			stateNameMaxLength: 3,
 			pathColor: '#666',
 			pathWidth: 2,
-			startPathSize: 35
+			startPathSize: 35,
+			emptySetSymbol: '-'
 		};
 	}
 
