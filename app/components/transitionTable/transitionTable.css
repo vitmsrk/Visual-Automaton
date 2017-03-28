@@ -1,26 +1,31 @@
 ﻿md-dialog-content.transition-table-content {
-	min-width: 640px;
     min-height: 350px;
 }
 
-#transition-table span {
+#transition-table {
+	min-width: 600px;
+}
+
+#transition-table tr {
+	height: 48px;
+}
+
+#transition-table th, #transition-table td {
+	padding: 10px;
 	text-align: center;
-	line-height: 48px;
+	white-space: nowrap;
 }
 
-#transition-table md-list-item {
-	padding: 0;
+#transition-table td {
+	background-color: #f7f7f7;
 }
 
-#transition-table .state-column {
+#transition-table .state-column, #transition-table .accept-column {
+	min-width: 80px;
 	width: 80px;
 }
 
-#transition-table .accept-column {
-	width: 80px;
-}
-
-#transition-table span.text-header {
+#transition-table .text-header {
 	font-weight: 600;
 }
 
@@ -30,5 +35,10 @@
 
 #transition-table .start-arrow {
 	position: absolute;
-	left: 8px;
+	left: 34px;
+}
+
+#transition-table .start-arrow i {
+	position: relative;
+    bottom: 2px;
 }
