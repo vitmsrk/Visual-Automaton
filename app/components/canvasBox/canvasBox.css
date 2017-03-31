@@ -155,3 +155,7 @@ svg.canvas circle {
 svg.canvas textPath {
 	baseline-shift: 45%;
 }
+
+.transition-text {
+	cursor: pointer;
+}

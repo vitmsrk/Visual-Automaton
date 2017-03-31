@@ -2,7 +2,7 @@
 	'use strict';
 
 	angular.module('VisualAutomatonApp', ['ngMaterial', 'ngResource', 'ngCookies'])
-		.constant('config', { version: '0.1.7' })
+		.constant('config', { version: '0.1.9' })
 		.run(['$rootScope', '$cookies', '$resource', run])
 		.config(['$mdThemingProvider', config]);
 
@@ -31,7 +31,8 @@
 			stateNameMaxLength: 3,
 			pathColor: '#666',
 			pathWidth: 2,
-			startPathSize: 35
+			startPathSize: 35,
+			emptySetSymbol: '-'
 		};
 	}
 

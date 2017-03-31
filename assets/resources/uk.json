@@ -15,5 +15,9 @@
   "TRANSITION_PROMPT_MESSAGE": "Введіть декілька симолів розділяючи їх комою:",
   "TRANSITION_PROMPT_PLACEHOLDER": "наприклад: a,b,c",
   "TRANSITION_PROMPT_OK": "Прийняти",
-  "TRANSITION_PROMPT_CANCEL": "Скасувати"
+  "TRANSITION_PROMPT_CANCEL": "Скасувати",
+  "STATE": "Стан",
+  "YES": "Так",
+  "NO": "Ні",
+  "CHARACTERS": "Символи:"
 }

@@ -1,2 +1,45 @@
-﻿body {
+﻿md-dialog-content.transition-table-content {
+    min-height: 350px;
+}
+
+#transition-table {
+	min-width: 600px;
+}
+
+#transition-table tr {
+	height: 48px;
+}
+
+#transition-table th, #transition-table td {
+	padding: 10px;
+	text-align: center;
+	white-space: nowrap;
+}
+
+#transition-table td {
+	background-color: #f7f7f7;
+	position: relative;
+}
+
+#transition-table .state-column, #transition-table .accept-column {
+	min-width: 80px;
+	width: 80px;
+}
+
+#transition-table .text-header {
+	font-weight: 600;
+}
+
+#transition-table .cell-header {
+	background-color: #eee;
+}
+
+#transition-table .start-arrow {
+	position: absolute;
+	left: 10px;
+}
+
+#transition-table .start-arrow i {
+	position: relative;
+    bottom: 2px;
 }
