@@ -18,5 +18,6 @@
   "TRANSITION_PROMPT_CANCEL": "Cancel",
   "STATE": "State",
   "YES": "Yes",
-  "NO": "No"
+  "NO": "No",
+  "CHARACTERS": "Characters:"
 }

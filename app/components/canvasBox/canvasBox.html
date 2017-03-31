@@ -34,7 +34,7 @@
 				<md-menu-item>
 					<span>{{translation.NAME}}</span>
 					<md-input-container md-no-float class="md-block state-name">
-						<input ng-model="activeState.name" placeholder="{{activeState.name}}" ng-keypress="$event.which == 13 ? closeMenu() : 0" aria-label="state-name">
+						<input ng-model="activeState.name" placeholder="{{activeState.name}}" ng-keypress="$event.which == 13 ? closeStateMenu() : 0" aria-label="state-name">
 					</md-input-container>
 				</md-menu-item>
 				<md-menu-divider></md-menu-divider>
@@ -59,6 +59,27 @@
 				<md-menu-divider></md-menu-divider>
 				<md-menu-item>
 					<button md-prevent-menu-close class="md-button md-ink-ripple" type="button" ng-click="removeState()" role="menuitem">
+						<md-icon><i class="material-icons md-18">delete_forever</i></md-icon>
+						<span>{{translation.REMOVE}}</span>
+					</button>
+				</md-menu-item>
+			</md-menu-content>
+		</div>
+	</div>
+	<div id="transition-menu">
+		<div class="md-open-menu-container md-whiteframe-z2 state-menu-container">
+			<md-menu-content width="3">
+				<md-menu-item>
+					<span>{{translation.CHARACTERS}}</span>
+				</md-menu-item>
+				<md-menu-item>
+					<md-input-container md-no-float class="md-block transition-name">
+						<input ng-model="activeTransition.name" placeholder="{{translation.TRANSITION_PROMPT_MESSAGE}}" ng-keypress="$event.which == 13 ? closeTransitionMenu() : 0" aria-label="transition-name">
+					</md-input-container>
+				</md-menu-item>
+				<md-menu-divider></md-menu-divider>
+				<md-menu-item>
+					<button md-prevent-menu-close class="md-button md-ink-ripple" type="button" ng-click="removeTransition()" role="menuitem">
 						<md-icon><i class="material-icons md-18">delete_forever</i></md-icon>
 						<span>{{translation.REMOVE}}</span>
 					</button>

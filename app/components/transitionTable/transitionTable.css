@@ -18,6 +18,7 @@
 
 #transition-table td {
 	background-color: #f7f7f7;
+	position: relative;
 }
 
 #transition-table .state-column, #transition-table .accept-column {
@@ -35,7 +36,7 @@
 
 #transition-table .start-arrow {
 	position: absolute;
-	left: 34px;
+	left: 10px;
 }
 
 #transition-table .start-arrow i {

@@ -18,24 +18,28 @@
 		const src = 'http://www.w3.org/2000/svg';
 		const xlink = 'http://www.w3.org/1999/xlink';
 
-		var menuCtrl = {
+		var stateMenuCtrl = {
 			open: function (event) {
 				$scope.activeState = $scope.tabs[$scope.current].states.getById(event.target.id);
 				$scope.activeStateName = $scope.activeState.name;
+
 				$mdMenu.show({
 					scope: $scope,
-					mdMenuCtrl: menuCtrl,
+					mdMenuCtrl: stateMenuCtrl,
 					element: $compile(angular.element(angular.copy(document.getElementById('state-menu').firstElementChild)))($scope),
 					target: event.target
 				});
 			},
 			close: function () {
 				$mdMenu.hide();
-				if (!$scope.activeState)
-					return;
+
+				if (!$scope.activeState) return;
+
 				if ($scope.activeState.name.length == 0)
 					$scope.activeState.name = $scope.activeStateName;
+
 				$scope.activeState.defs.firstElementChild.childNodes[1].innerHTML = $scope.activeState.name;
+
 				window.setTimeout(function () {
 					$scope.activeState = null;
 					$scope.activeStateName = null;
@@ -55,6 +59,48 @@
 			}
 		};
 
+		var transitionMenuCtrl = {
+			open: function (event) {								
+				$scope.activeTransition = $scope.tabs[$scope.current].transitions.getById(event.target.id);
+				$scope.activeTransition.name = $scope.activeTransition.getString();
+
+				$mdMenu.show({
+					scope: $scope,
+					mdMenuCtrl: transitionMenuCtrl,
+					element: $compile(angular.element(angular.copy(document.getElementById('transition-menu').firstElementChild)))($scope),
+					target: event.target
+				});
+			},
+			close: function () {
+				$mdMenu.hide();
+
+				if (!$scope.activeTransition) return;
+
+				if ($scope.activeTransition.name.length == 0) {
+					$scope.activeTransition.name = $scope.activeTransition.getString();
+				} else {
+					$scope.activeTransition.symbols = $scope.activeTransition.name.split(',');
+					$scope.activeTransition.textPath.innerHTML = $scope.activeTransition.getString();
+				}
+
+				window.setTimeout(function () {
+					$scope.activeTransition = null;
+				}, 200);
+			},
+			positionMode: function () {
+				return {
+					left: 'target',
+					top: 'target'
+				};
+			},
+			offsets: function () {
+				return {
+					top: $scope.transitionMenuOffsets.Y + 12,
+					left: $scope.transitionMenuOffsets.X
+				};
+			}
+		};
+
 		$scope.tabsCount = 1;
 		$scope.tabs = [new Tab($scope.tabsCount)];
 		$scope.current = 0;
@@ -63,6 +109,7 @@
 		$scope.activeStateName = null;
 		$scope.activeTransition = null;
 		$scope.hoverState = null;
+		$scope.transitionMenuOffsets = null;
 
 		$scope.getCanvas = function () {
 			return document.getElementById($scope.tabs[$scope.current].id);
@@ -97,9 +144,10 @@
 			that.stop = function () {
 				that.enabled = false;
 				$scope.$apply();
-				if ($scope.hoverState)
+
+				if ($scope.hoverState) {
 					$scope.bindTransition(activeState);
-				else {
+				} else {
 					canvas.removeChild($scope.activeTransition.use);
 					canvas.removeChild($scope.activeTransition.defs);
 					activeState.startTransitions.splice(activeState.startTransitions.indexOf($scope.activeTransition), 1);
@@ -187,7 +235,7 @@
 				'class': 'state',
 				'ng-class': '{"transition-mode": transitionMode.enabled}',
 				'ng-attr-transform': 'scale({{tabs[current].scale}})',
-				'ng-click': 'openMenu($event)',
+				'ng-click': 'openStateMenu($event)',
 				'ng-mouseenter': 'transitionMode.enabled ? setHoverState("' + state.id + '") : 0',
 				'ng-mouseleave': 'transitionMode.enabled ? dropHoverState() : 0'
 			});
@@ -229,17 +277,30 @@
 			}
 
 			$scope.tabs[$scope.current].states.splice($scope.tabs[$scope.current].states.indexOf($scope.activeState), 1);
-			$scope.activeState = null;
-			menuCtrl.close();
+			stateMenuCtrl.close();
 		};
 
-		$scope.openMenu = function (event) {
+		$scope.openStateMenu = function (event) {
 			if ($scope.transitionMode.enabled) return;
-			$scope.hasDragged ? $scope.hasDragged = false : menuCtrl.open(event);
+			$scope.hasDragged ? $scope.hasDragged = false : stateMenuCtrl.open(event);
 		};
 
-		$scope.closeMenu = function () {
-			menuCtrl.close();
+		$scope.closeStateMenu = function () {
+			stateMenuCtrl.close();
+		};
+
+		$scope.openTransitionMenu = function (event) {
+			//event.target.blur();
+			var clientRect = event.target.getBoundingClientRect();
+			$scope.transitionMenuOffsets = {
+				X: event.x - clientRect.left,
+				Y: event.y - clientRect.top
+			};
+			transitionMenuCtrl.open(event);
+		};
+
+		$scope.closeTransitionMenu = function () {
+			transitionMenuCtrl.close();
 		};
 
 		$scope.toggleStart = function () {
@@ -285,7 +346,8 @@
 
 			var text = document.createElementNS(src, 'text');
 			text.setAttributes({
-				'text-anchor': 'middle'
+				'text-anchor': 'middle',
+				'class': 'transition-text'
 			});
 			text.appendChild($compile(textPath)($scope)[0]);
 
@@ -302,7 +364,8 @@
 			use.setAttributes({
 				'id': transition.id,
 				'class': 'transition',
-				'ng-attr-transform': 'scale({{tabs[current].scale}})'
+				'ng-attr-transform': 'scale({{tabs[current].scale}})',
+				'ng-click': 'openTransitionMenu($event)'
 			});
 
 			transition.startState = $scope.activeState;
@@ -373,6 +436,19 @@
 			}
 		};
 
+		$scope.removeTransition = function () {
+			var canvas = $scope.getCanvas();
+
+			canvas.removeChild($scope.activeTransition.use);
+			canvas.removeChild($scope.activeTransition.defs);
+
+			$scope.activeTransition.startState.startTransitions.splice($scope.activeTransition.startState.startTransitions.indexOf($scope.activeTransition), 1);
+			$scope.activeTransition.endState.endTransitions.splice($scope.activeTransition.endState.endTransitions.indexOf($scope.activeTransition), 1);
+			$scope.tabs[$scope.current].transitions.splice($scope.tabs[$scope.current].transitions.indexOf($scope.activeTransition), 1);
+
+			transitionMenuCtrl.close();
+		};
+
 		$scope.setHoverState = function (id) {
 			$scope.hoverState = $scope.tabs[$scope.current].states.getById(id);
 		};
@@ -392,8 +468,6 @@
 				clickOutsideToClose: true
 			})
 			.then(function (answer) { }, function () { });
-
-			console.log($scope.tabs[$scope.current].transitionTable);
 		};
 
 		$scope.$watch('activeState.name', function (newValue, oldValue) {

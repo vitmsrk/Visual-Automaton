@@ -17,7 +17,7 @@
   "TRANSITION_PROMPT_OK": "Прийняти",
   "TRANSITION_PROMPT_CANCEL": "Скасувати",
   "STATE": "Стан",
-  "INPUT": "Вхід",
   "YES": "Так",
-  "NO": "Ні"
+  "NO": "Ні",
+  "CHARACTERS": "Символи:"
 }
