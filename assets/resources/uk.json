@@ -19,5 +19,17 @@
   "STATE": "Стан",
   "YES": "Так",
   "NO": "Ні",
-  "CHARACTERS": "Символи:"
+  "CHARACTERS": "Символи:",
+  "PREFERENCES": "Налаштування",
+  "PREFERENCE_OPTION_1": "Колір стану за замовчуванням:",
+  "PREFERENCE_OPTION_2": "Колір початкового стану:",
+  "PREFERENCE_OPTION_3": "Колір заключного стану:",
+  "PREFERENCE_OPTION_4": "Префікс назви стану:",
+  "PREFERENCE_OPTION_5": "Колір назви стану:",
+  "PREFERENCE_OPTION_6": "Колір переходу:",
+  "PREFERENCE_OPTION_7": "Символ порожньої множини:",
+  "RESTORE_DEFAULT_PREFERENCES": "Відновити стандартні налаштування",
+  "EMPTY": "Пусто",
+  "PREFERENCES_CONFIRM_TITLE": "Ви впевнені?",
+  "PREFERENCES_CONFIRM_MESSAGE": "Всі Ваші налаштування будуть скинуті."
 }

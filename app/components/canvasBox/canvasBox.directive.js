@@ -132,7 +132,7 @@
 				target = t;
 				canvas = $scope.getCanvas();
 				scale = $scope.tabs[$scope.current].scale;
-				r = $scope.tabs[$scope.current].stateRadius;
+				r = $scope.preferences.stateRadius;
 				clientRect = canvas.getBoundingClientRect();
 				activeState = $scope.activeState;
 				C.x = parseFloat(activeState.use.getAttribute('x'));
@@ -192,22 +192,22 @@
 
 			var circle = document.createElementNS(src, 'circle');
 			circle.setAttributes({
-				'ng-attr-fill': '{{tabs[current].states.getById("' + state.id + '").accept ? tabs[current].acceptStateColor : tabs[current].states.getById("' + state.id + '").start ? tabs[current].startStateColor : tabs[current].defaultStateColor}}',
-				'ng-attr-r': '{{tabs[current].stateRadius}}',
+				'ng-attr-fill': '{{tabs[current].states.getById("' + state.id + '").accept ? preferences.acceptStateColor : tabs[current].states.getById("' + state.id + '").start ? preferences.startStateColor : preferences.defaultStateColor}}',
+				'ng-attr-r': '{{preferences.stateRadius}}',
 			});
 
 			var text = document.createElementNS(src, 'text');
 			text.innerHTML = state.name;
 			text.setAttributes({
 				'class': 'non-selectable',
-				'ng-attr-fill': '{{tabs[current].stateNameColor}}',
+				'ng-attr-fill': '{{preferences.stateNameColor}}',
 				'text-anchor': 'middle',
 				'alignment-baseline': 'central'
 			});
 
 			var startPath = document.createElementNS(src, 'path'),
-			mx = -($scope.tabs[$scope.current].stateRadius + $scope.preferences.startPathSize + 10),
-			lx = -($scope.tabs[$scope.current].stateRadius + 10);
+			mx = -($scope.preferences.stateRadius + $scope.preferences.startPathSize + 10),
+			lx = -($scope.preferences.stateRadius + 10);
 			startPath.setAttributes({
 				'ng-if': 'tabs[current].states.getById("' + state.id + '").start',
 				'ng-attr-d': 'M ' + mx + ', 0 L ' + lx + ', 0',
@@ -322,7 +322,7 @@
 					y: (event.y - clientRect.top) / tab.scale
 				},
 				//QPoints = quadratic(M, L),
-				m = transform(M, L, tab.stateRadius),
+				m = transform(M, L, $scope.preferences.stateRadius),
 				l = transform(L, M, 10);
 
 			var path = document.createElementNS(src, 'path');
@@ -389,7 +389,7 @@
 				L = { x: parseFloat(activeState.use.getAttribute('x')),
 					  y: parseFloat(activeState.use.getAttribute('y')) },
 				path = $scope.activeTransition.defs.firstElementChild.firstElementChild,
-				r = $scope.tabs[$scope.current].stateRadius,
+				r = $scope.preferences.stateRadius,
 				d = path.getAttribute('d'),
 				M = d.match(/M[-\d\.e]*,[-\d\.e]*\s/)[0],
 				P = d.match(/L[-\d\.e]*,[-\d\.e]*/)[0],
@@ -461,19 +461,65 @@
 			$scope.tabs[$scope.current].transitionTable.update();
 
 			$mdDialog.show({
-				controller: transitionTableCtrl,
-				templateUrl: 'app/components/transitionTable/transitionTable.html',
+				controller: modalCtrl({
+					table: $scope.tabs[$scope.current].transitionTable
+				}),
+				templateUrl: 'app/components/modals/transitionTable.html',
 				parent: angular.element(document.body),
 				targetEvent: event,
-				clickOutsideToClose: true
+				clickOutsideToClose: false
 			})
 			.then(function (answer) { }, function () { });
+		};
+
+		$scope.openPreferences = function (event) {
+			$mdDialog.show({
+				controller: modalCtrl({
+					init: initPreferences,
+					restore: function (event, scope) {
+						$mdDialog.show({
+							controller: modalCtrl({
+								title: $scope.translation.PREFERENCES_CONFIRM_TITLE,
+								textContent: $scope.translation.PREFERENCES_CONFIRM_MESSAGE,
+								answer: scope
+							}),
+							templateUrl: 'app/components/modals/confirm.html',
+							parent: angular.element(document.body),
+							targetEvent: event,
+							skipHide: true,
+							clickOutsideToClose: false
+						})
+						.then(function (scope) {
+							$scope.restorePreferences();
+							initPreferences(scope);
+						}, function () { });
+					},
+					equals: function (preferences) {
+						return angular.equals(preferences, $scope.getDefaultPreferences());
+					}
+				}),
+				templateUrl: 'app/components/modals/preferences.html',
+				parent: angular.element(document.body),
+				targetEvent: event,
+				clickOutsideToClose: false
+			})
+			.then(function (preferences) {
+				$scope.setPreferences(preferences);
+			}, function () { });
 		};
 
 		$scope.$watch('activeState.name', function (newValue, oldValue) {
 			if (newValue && newValue.length > $scope.preferences.stateNameMaxLength)
 				$scope.activeState.name = oldValue;
 		});
+
+		function initPreferences(scope) {
+			scope.preferences = angular.copy($scope.preferences);
+			scope.$watch('preferences.stateNamePrefix', function (newValue, oldValue) {
+				if (newValue && newValue.length > 1)
+					scope.preferences.stateNamePrefix = oldValue;
+			});
+		}
 
 		function Tab(index) {
 			this.id = 'tab-' + index;
@@ -483,11 +529,6 @@
 			this.states = [];
 			this.transitions = [];
 			this.scale = 1.0;
-			this.defaultStateColor = $scope.preferences.defaultStateColor;
-			this.startStateColor = $scope.preferences.startStateColor;
-			this.acceptStateColor = $scope.preferences.acceptStateColor;
-			this.stateRadius = $scope.preferences.stateRadius;
-			this.stateNameColor = $scope.preferences.stateNameColor;
 			this.transitionTable = new TransitionTable(this);
 		}
 
@@ -609,7 +650,7 @@
 				var tab = $scope.tabs[$scope.current];
 				state = tab.states.getById(event.target.getAttribute('id'));
 				scale = tab.scale;
-				r = tab.stateRadius;
+				r = $scope.preferences.stateRadius;
 				event.preventDefault();
 				document.addEventListener('mousemove', mouseMove);
 				document.addEventListener('mouseup', mouseUp);
@@ -689,10 +730,6 @@
 				document.removeEventListener('mousemove', mouseMove);
 				document.removeEventListener('mouseup', mouseUp);
 			}
-		};
-
-		Array.prototype.getById = function (id) {
-			return this[this.map(function (e) { return e.id }).indexOf(id)];
 		};
 	}
 })(angular.module('VisualAutomatonApp'));

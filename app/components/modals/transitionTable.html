@@ -1,8 +1,11 @@
-﻿<md-dialog aria-label="Mango (Fruit)">
+﻿<md-dialog aria-label="Transition table">
 	<form ng-cloak>
 		<md-toolbar>
 			<div class="md-toolbar-tools">
-				<h2 class="non-selectable">{{translation.TRANSITION_TABLE}}</h2>
+				<h2 class="non-selectable">
+					<md-icon><i class="material-icons md-18">grid_on</i></md-icon>&nbsp;
+					{{translation.TRANSITION_TABLE}}
+				</h2>
 				<span flex></span>
 				<md-button class="md-icon-button" ng-click="cancel()">
 					<md-icon><i class="material-icons">close</i></md-icon>
@@ -10,30 +13,30 @@
 			</div>
 		</md-toolbar>
 
-		<md-dialog-content class="transition-table-content">
+		<md-dialog-content class="modal-content">
 			<div class="md-dialog-content">
 				<table id="transition-table">
 					<tr class="cell-header">
 						<th class="state-column text-header">{{translation.STATE}}</th>
-						<th ng-repeat="symbol in table.alphabet">'{{symbol}}'</th>
-						<th ng-if="!table.alphabet.length"></th>
+						<th ng-repeat="symbol in params.table.alphabet">'{{symbol}}'</th>
+						<th ng-if="!params.table.alphabet.length"></th>
 						<th class="accept-column text-header">{{translation.ACCEPT}}</th>
 					</tr>
-					<tr ng-repeat="state in table.tab.states">
+					<tr ng-repeat="state in params.table.tab.states">
 						<td class="cell-header state-column text-header">
 							<md-icon ng-if="state.start" class="start-arrow"><i class="material-icons md-18">trending_flat</i></md-icon>
 							<span>{{state.name}}</span>
 						</td>
-						<td ng-repeat="symbol in table.alphabet">
-							<span ng-repeat="item in table.rows[state.name][symbol]">
+						<td ng-repeat="symbol in params.table.alphabet">
+							<span ng-repeat="item in params.table.rows[state.name][symbol]">
 								<span ng-if="$first">{</span>
 								<span ng-if="!$first">,</span>
 								<span>{{item.name}}</span>
 								<span ng-if="$last">}</span>
 							</span>
-							<span ng-if="!table.rows[state.name][symbol].length">{{preferences.emptySetSymbol}}</span>
+							<span ng-if="!params.table.rows[state.name][symbol].length">{{preferences.emptySetSymbol}}</span>
 						</td>
-						<td ng-if="!table.alphabet.length"></td>
+						<td ng-if="!params.table.alphabet.length"></td>
 						<td class="accept-column">{{state.accept ? translation.YES : translation.NO | lowercase}}</td>
 					</tr>
 				</table>

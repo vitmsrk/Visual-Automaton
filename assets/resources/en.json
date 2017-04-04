@@ -19,5 +19,17 @@
   "STATE": "State",
   "YES": "Yes",
   "NO": "No",
-  "CHARACTERS": "Characters:"
+  "CHARACTERS": "Characters:",
+  "PREFERENCES": "Preferences",
+  "PREFERENCE_OPTION_1": "Default state color:",
+  "PREFERENCE_OPTION_2": "Start state color:",
+  "PREFERENCE_OPTION_3": "Accept state color:",
+  "PREFERENCE_OPTION_4": "State name prefix:",
+  "PREFERENCE_OPTION_5": "State name color:",
+  "PREFERENCE_OPTION_6": "Transition color:",
+  "PREFERENCE_OPTION_7": "Empty set symbol:",
+  "RESTORE_DEFAULT_PREFERENCES": "Restore default preferences",
+  "EMPTY": "Empty",
+  "PREFERENCES_CONFIRM_TITLE": "Are you sure?",
+  "PREFERENCES_CONFIRM_MESSAGE": "All your preferences will be reset."
 }

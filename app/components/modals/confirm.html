@@ -1,0 +1,12 @@
+<md-dialog aria-label="Confirm">
+    <md-dialog-content class="confirm-dialog-content">
+        <div class="md-dialog-content">
+            <h2 class="md-title">{{params.title}}</h2>
+            <p>{{params.textContent}}</p>
+        </div>
+    </md-dialog-content>
+    <md-dialog-actions layout="row">
+        <md-button class="md-primary" ng-click="cancel()" flex>{{translation.NO}}</md-button>
+        <md-button ng-click="apply(params.answer)" flex>{{translation.YES}}</md-button>
+    </md-dialog-actions>
+</md-dialog>

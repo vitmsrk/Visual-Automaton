@@ -31,3 +31,93 @@ body {
 h2.md-title {
 	font-weight: 700;
 }
+
+md-dialog md-toolbar md-icon i.material-icons {
+	position: relative;
+	bottom: 2px;
+}
+
+md-dialog-content.modal-content {
+    min-height: 350px;
+}
+
+md-dialog-content.modal-content table tr {
+	height: 48px;
+}
+
+md-dialog-content.modal-content table td {
+	background-color: #f7f7f7;
+	position: relative;
+}
+
+md-dialog-content.modal-content table .text-header {
+	font-weight: 600;
+}
+
+md-dialog-content.modal-content table .cell-header {
+	background-color: #eee;
+}
+
+md-dialog .md-dialog-content .md-title {
+	margin-top: 0;
+}
+
+md-dialog .confirm-dialog-content {
+	min-width: 350px;
+}
+
+#transition-table .start-arrow {
+	position: absolute;
+	left: 10px;
+}
+
+#transition-table .start-arrow i {
+	position: relative;
+    bottom: 2px;
+}
+
+#transition-table {
+	min-width: 600px;
+}
+
+#transition-table .state-column,
+#transition-table .accept-column {
+	min-width: 80px;
+	width: 80px;
+}
+
+#transition-table th,
+#transition-table td {
+	padding: 10px;
+	text-align: center;
+	white-space: nowrap;
+}
+
+#preferences-table .key-column {
+	min-width: 250px;
+	width: 250px;
+}
+
+#preferences-table .value-column {
+	min-width: 170px;
+	width: 170px;
+}
+
+#preferences-table td {
+	padding: 0 20px;
+}
+
+#preferences-table .md-color-picker-input-container button.md-color-picker-clear,
+#preferences-table md-input-container .md-errors-spacer {
+	display: none;
+}
+
+#preferences-table md-input-container {
+	margin: 0;
+}
+
+#preferences-table .md-color-picker-input-container .md-color-picker-preview {
+	top: 5px;
+	cursor: pointer;
+	margin-right: 5px;
+}

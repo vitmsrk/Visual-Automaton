@@ -27,3 +27,7 @@ Element.prototype.draggable = function (targets) {
 		document.removeEventListener('mouseup', mouseUp);
 	}
 };
+
+Array.prototype.getById = function (id) {
+	return this[this.map(function (e) { return e.id }).indexOf(id)];
+};
