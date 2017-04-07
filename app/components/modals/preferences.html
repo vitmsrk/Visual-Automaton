@@ -1,0 +1,76 @@
+<md-dialog aria-label="Preferences" ng-init="params.init(this)">
+	<form ng-cloak>
+		<md-toolbar>
+			<div class="md-toolbar-tools">
+				<h2 class="non-selectable">
+					<md-icon><i class="material-icons md-18">settings</i></md-icon>&nbsp;
+					{{translation.PREFERENCES}}
+				</h2>
+				<span flex></span>
+				<md-button class="md-icon-button" ng-click="cancel()">
+					<md-icon><i class="material-icons">close</i></md-icon>
+				</md-button>
+			</div>
+		</md-toolbar>
+
+		<md-dialog-content class="modal-content">
+			<div class="md-dialog-content">
+				<table id="preferences-table">
+					<tr>
+						<td class="cell-header text-header key-column">{{translation.PREFERENCE_OPTION_1}}</td>
+						<td class="value-column">
+							<div md-color-picker ng-model="preferences.defaultStateColor"></div>
+						</td>
+					</tr>
+					<tr>
+						<td class="cell-header text-header key-column">{{translation.PREFERENCE_OPTION_2}}</td>
+						<td class="value-column">
+							<div md-color-picker ng-model="preferences.startStateColor"></div>
+						</td>
+					</tr>
+					<tr>
+						<td class="cell-header text-header key-column">{{translation.PREFERENCE_OPTION_3}}</td>
+						<td class="value-column">
+							<div md-color-picker ng-model="preferences.acceptStateColor"></div>
+						</td>
+					</tr>
+					<tr>
+						<td class="cell-header text-header key-column">{{translation.PREFERENCE_OPTION_5}}</td>
+						<td class="value-column">
+							<div md-color-picker ng-model="preferences.stateNameColor"></div>
+						</td>
+					</tr>
+					<tr>
+						<td class="cell-header text-header key-column">{{translation.PREFERENCE_OPTION_6}}</td>
+						<td class="value-column">
+							<div md-color-picker ng-model="preferences.pathColor"></div>
+						</td>
+					</tr>
+					<tr>
+						<td class="cell-header text-header key-column">{{translation.PREFERENCE_OPTION_4}}</td>
+						<td class="value-column">
+							<md-input-container md-no-float class="md-block">
+								<input ng-model="preferences.stateNamePrefix" placeholder="{{translation.EMPTY}}">
+							</md-input-container>
+						</td>
+					</tr>
+					<tr>
+						<td class="cell-header text-header key-column">{{translation.PREFERENCE_OPTION_7}}</td>
+						<td class="value-column">
+							<md-input-container md-no-float class="md-block">
+								<input ng-model="preferences.emptySetSymbol" placeholder="{{translation.EMPTY}}">
+							</md-input-container>
+						</td>
+					</tr>
+				</table>
+				<md-button ng-click="params.restore($event, this)" ng-disabled="params.equals(preferences)">{{translation.RESTORE_DEFAULT_PREFERENCES}}</md-button>
+			</div>
+		</md-dialog-content>
+
+		<md-dialog-actions layout="row">
+			<span flex></span>
+			<md-button ng-click="cancel()">{{translation.CANCEL}}</md-button>
+			<md-button ng-click="apply(preferences)">{{translation.APPLY}}</md-button>
+		</md-dialog-actions>
+	</form>
+</md-dialog>

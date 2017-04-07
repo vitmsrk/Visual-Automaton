@@ -139,7 +139,7 @@ svg.canvas circle {
 	margin-right: 6px;
 }
 
-.state-menu-container .md-button md-icon .material-icons {
+.state-menu-container .md-button md-icon i.material-icons {
 	position: relative;
 	bottom: 2px;
 }

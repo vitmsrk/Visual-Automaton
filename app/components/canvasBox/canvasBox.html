@@ -22,6 +22,11 @@
 				{{translation.TRANSITION_TABLE}}
 			</md-button> 
 			<span md-truncate flex class="md-hue-1"></span>
+			<md-button class="md-raised" ng-click="openPreferences($event)">
+				<md-icon><i class="material-icons md-18">settings</i></md-icon>&nbsp;
+				{{translation.PREFERENCES}}
+			</md-button>
+			&nbsp;&nbsp;&nbsp;
 			<md-slider-container>
 				<span id="scale-value" class="non-selectable">{{tabs[current].scale * 100 | number: 0}}%</span>
 				<md-slider flex id="scale-slider" step="0.1" min="0.5" max="2.0" ng-model="tabs[current].scale" title="{{translation.SCALE}}" aria-label="scale"></md-slider>
