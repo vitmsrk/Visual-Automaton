@@ -4,9 +4,15 @@ Element.prototype.setAttributes = function (attrs) {
 	}
 };
 
-Array.prototype.getById = function (id) {
-	return this[this.map(function (e) { return e.id }).indexOf(id)];
-};
+Object.defineProperty(Array.prototype, 'getById', {
+    enumerable: false,
+    value: function (id) { return this[this.map(function (e) { return e.id }).indexOf(id)]; }
+});
+
+Object.defineProperty(Array.prototype, 'getByName', {
+    enumerable: false,
+    value: function (name) { return this[this.map(function (e) { return e.name }).indexOf(name)]; }
+});
 
 Element.prototype.draggable = function (scope) {
 	var that = this, state = null, scale = 0, r = 0;
@@ -29,9 +35,10 @@ Element.prototype.draggable = function (scope) {
 			C = { x: that.x.animVal.value + x, y: that.y.animVal.value + y };
 		that.setAttribute('x', C.x);
 		that.setAttribute('y', C.y);
+		state.position.x = C.x;
+		state.position.y = C.y;
 		for (var i in state.startTransitions) {
 			var transition = state.startTransitions[i];
-			if (typeof transition === 'function') continue;
 			var path = transition.defs.firstElementChild.firstElementChild,
 				E = { x: transition.endState.use.x.animVal.value, y: transition.endState.use.y.animVal.value },
 				a = angle(C, E) || transition.a,
@@ -44,7 +51,6 @@ Element.prototype.draggable = function (scope) {
 		}
 		for (var i in state.endTransitions) {
 			var transition = state.endTransitions[i];
-			if (typeof transition === 'function') continue;
 			var path = transition.defs.firstElementChild.firstElementChild,
 				E = { x: transition.startState.use.x.animVal.value, y: transition.startState.use.y.animVal.value },
 				a = angle(E, C) || transition.a,
@@ -101,7 +107,7 @@ Element.prototype.transitionDraggable = function (scope) {
 };
 
 function transform(C, L, r) {
-	var a = Math.atan((L.x - C.x) / (L.y - C.y)),
+	var a = Math.atan((L.x - C.x) / (L.y - C.y)) || 0,
 		k = L.y >= C.y ? 1 : -1;
 	return {
 		x: r * Math.sin(a) * k + C.x,

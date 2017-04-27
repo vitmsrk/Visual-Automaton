@@ -2,9 +2,9 @@
 	'use strict';
 
 	angular.module('VisualAutomatonApp', ['ngMaterial', 'ngResource', 'ngCookies', 'mdColorPicker'])
-	.constant('config', { version: '0.1.10' })
+	.constant('config', { version: '1.0.0' })
 	.run(['$rootScope', '$cookies', '$resource', run])
-	.config(['$mdThemingProvider', config]);
+	.config(['$mdThemingProvider', '$compileProvider', config]);
 
 	const DEFAULT_TRANSLATION = 'en';
 
@@ -19,7 +19,8 @@
 		pathColor: '#666',
 		pathWidth: 2,
 		startPathSize: 35,
-		emptySetSymbol: '-'
+		emptySetSymbol: '-',
+		emptyExpressionSymbol: 'e'
 	};
 
 	function run($rootScope, $cookies, $resource) {
@@ -32,6 +33,7 @@
 
 			$resource(path + code + '.json').get(function (data) {
 				$rootScope.translation = data;
+				$rootScope.$emit('translationChanged');
 			});
 
 			$cookies.put('VISUAL_AUTOMATON_TRANSLATION', code);
@@ -57,7 +59,7 @@
 		};
 	}
 
-	function config($mdThemingProvider) {
+	function config($mdThemingProvider, $compileProvider) {
 		$mdThemingProvider.theme('default')
 		.primaryPalette('blue-grey', {
 			'default': '800',
@@ -71,5 +73,7 @@
 			'hue-2': '300',
 			'hue-3': '600'
 		});
+
+		$compileProvider.aHrefSanitizationWhitelist(/^\s*(|blob|):/);
 	}
 })();

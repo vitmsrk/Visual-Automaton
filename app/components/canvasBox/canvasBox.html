@@ -2,11 +2,11 @@
 	<md-tabs md-border-bottom md-autoselect md-selected="current">
 		<md-tab ng-repeat="tab in tabs">
 			<md-tab-label>
-				{{tab.title || translation.NEW_TAB + (tab.index != 1 ? ' ' + tab.index : '')}}&nbsp;&nbsp;
+				{{tab.title || translation.NEW_TAB + ' ' + tab.index}}&nbsp;&nbsp;
 				<span class="remove-tab non-selectable" ng-click="removeTab(tab)" title="{{translation.CLOSE_TAB}}">✖</span>
 			</md-tab-label>
 			<md-tab-body>
-				<svg class="canvas" id="{{tab.id}}" ng-dblclick="drawState($event, tab)"></svg>
+				<svg class="canvas" id="{{tab.id}}" ng-dblclick="addState($event, tab)"></svg>
 			</md-tab-body>
 		</md-tab>
 		<md-tab ng-click="addTab()" ng-disabled="true">
@@ -20,7 +20,8 @@
 			<md-button class="md-raised" ng-click="openTransitionTable($event)">
 				<md-icon><i class="material-icons md-18">grid_on</i></md-icon>&nbsp;
 				{{translation.TRANSITION_TABLE}}
-			</md-button> 
+			</md-button>
+			<md-button id="draw" class="hidden" ng-click="drawFromFile(fromFile)">draw</md-button>
 			<span md-truncate flex class="md-hue-1"></span>
 			<md-button class="md-raised" ng-click="openPreferences($event)">
 				<md-icon><i class="material-icons md-18">settings</i></md-icon>&nbsp;
@@ -56,7 +57,7 @@
 					</md-checkbox>
 				</md-menu-item>
 				<md-menu-item>
-					<button class="md-button md-ink-ripple" type="button" ng-click="buildTransition($event)" role="menuitem">
+					<button class="md-button md-ink-ripple" type="button" ng-click="addTransition($event)" role="menuitem">
 						<md-icon><i class="material-icons md-18">arrow_forward</i></md-icon>
 						<span>{{translation.TRANSITION}}</span>
 					</button>

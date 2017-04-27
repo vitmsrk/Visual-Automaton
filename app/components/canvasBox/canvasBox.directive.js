@@ -13,8 +13,7 @@
 		}
 	}
 
-	function canvasBoxCtrl($scope, $compile, $mdMenu, $mdDialog)
-	{
+	function canvasBoxCtrl($scope, $rootScope, $compile, $mdMenu, $mdDialog, fileIOSrvc) {
 		const src = 'http://www.w3.org/2000/svg';
 		const xlink = 'http://www.w3.org/1999/xlink';
 
@@ -176,11 +175,18 @@
 			$scope.tabs.splice($scope.tabs.indexOf(tab), 1);
 		};
 
-		$scope.drawState = function (event, tab) {
+		$scope.addState = function (event, tab) {
 			if ($scope.transitionMode.enabled) return;
-
 			var state = new State(tab.index, ++tab.statesCount, $scope.preferences.stateNamePrefix + (tab.statesCount - 1));
+			state.position = {
+				x: event.offsetX / $scope.tabs[$scope.current].scale,
+				y: event.offsetY / $scope.tabs[$scope.current].scale
+			};
+			$scope.drawState(state);
+			tab.states.push(state);
+		};
 
+		$scope.drawState = function (state) {
 			var circle = document.createElementNS(src, 'circle');
 			circle.setAttributes({
 				'ng-attr-fill': '{{tabs[current].states.getById("' + state.id + '").accept ? preferences.acceptStateColor : tabs[current].states.getById("' + state.id + '").start ? preferences.startStateColor : preferences.defaultStateColor}}',
@@ -197,8 +203,8 @@
 			});
 
 			var startPath = document.createElementNS(src, 'path'),
-			mx = -($scope.preferences.stateRadius + $scope.preferences.startPathSize + 10),
-			lx = -($scope.preferences.stateRadius + 10);
+				mx = -($scope.preferences.stateRadius + $scope.preferences.startPathSize + 10),
+				lx = -($scope.preferences.stateRadius + 10);
 			startPath.setAttributes({
 				'ng-if': 'tabs[current].states.getById("' + state.id + '").start',
 				'ng-attr-d': 'M ' + mx + ', 0 L ' + lx + ', 0',
@@ -221,8 +227,8 @@
 			use.setAttributeNS(xlink, 'href', '#' + g.getAttribute('id'));
 			use.setAttributes({
 				'id': state.id,
-				'x': event.offsetX / $scope.tabs[$scope.current].scale,
-				'y': event.offsetY / $scope.tabs[$scope.current].scale,
+				'x': state.position.x,
+				'y': state.position.y,
 				'class': 'state',
 				'ng-class': '{"transition-mode": transitionMode.enabled}',
 				'ng-attr-transform': 'scale({{tabs[current].scale}})',
@@ -234,7 +240,6 @@
 
 			state.defs = $compile(defs)($scope)[0];
 			state.use = $compile(use)($scope)[0];
-			tab.states.push(state);
 
 			var canvas = $scope.getCanvas();
 			canvas.appendChild(state.defs);
@@ -242,33 +247,32 @@
 		};
 
 		$scope.removeState = function () {
-			var canvas = $scope.getCanvas();
-
-			canvas.removeChild($scope.activeState.use);
-			canvas.removeChild($scope.activeState.defs);
-
-			for (var i in $scope.activeState.startTransitions) {
-				var transition = $scope.activeState.startTransitions[i];
-				if (transition instanceof Transition) {
-					canvas.removeChild(transition.use);
-					canvas.removeChild(transition.defs);
-					transition.endState.endTransitions.splice(transition.endState.endTransitions.indexOf(transition), 1);
-					$scope.tabs[$scope.current].transitions.splice($scope.tabs[$scope.current].transitions.indexOf(transition), 1);
-				}
-			}
-
-			for (var i in $scope.activeState.endTransitions) {
-				var transition = $scope.activeState.endTransitions[i];
-				if (transition instanceof Transition) {
-					canvas.removeChild(transition.use);
-					canvas.removeChild(transition.defs);
-					transition.startState.startTransitions.splice(transition.startState.startTransitions.indexOf(transition), 1);
-					$scope.tabs[$scope.current].transitions.splice($scope.tabs[$scope.current].transitions.indexOf(transition), 1);
-				}
-			}
-
+			$scope.deleteState($scope.activeState);
 			$scope.tabs[$scope.current].states.splice($scope.tabs[$scope.current].states.indexOf($scope.activeState), 1);
 			stateMenuCtrl.close();
+		};
+
+		$scope.deleteState = function (state) {
+			var canvas = $scope.getCanvas();
+
+			canvas.removeChild(state.use);
+			canvas.removeChild(state.defs);
+
+			for (var i in state.startTransitions) {
+				var transition = state.startTransitions[i];
+				canvas.removeChild(transition.use);
+				canvas.removeChild(transition.defs);
+				transition.endState.endTransitions.splice(transition.endState.endTransitions.indexOf(transition), 1);
+				$scope.tabs[$scope.current].transitions.splice($scope.tabs[$scope.current].transitions.indexOf(transition), 1);
+			}
+
+			for (var i in state.endTransitions) {
+				var transition = state.endTransitions[i];
+				canvas.removeChild(transition.use);
+				canvas.removeChild(transition.defs);
+				transition.startState.startTransitions.splice(transition.startState.startTransitions.indexOf(transition), 1);
+				$scope.tabs[$scope.current].transitions.splice($scope.tabs[$scope.current].transitions.indexOf(transition), 1);
+			}
 		};
 
 		$scope.openStateMenu = function (event) {
@@ -300,21 +304,31 @@
 					$scope.tabs[$scope.current].states[i].start = false;
 		};
 
-		$scope.buildTransition = function (event) {
+		$scope.addTransition = function (event) {
 			var tab = $scope.tabs[$scope.current],
 				transition = new Transition(tab.index, ++tab.transitionsCount),
 				clientRect = $scope.getCanvas().getBoundingClientRect(),
 				C = { x: parseFloat($scope.activeState.use.getAttribute('x')), y: parseFloat($scope.activeState.use.getAttribute('y')) },
 				E = { x: (event.x - clientRect.left) / tab.scale, y: (event.y - clientRect.top) / tab.scale };
+
 			transition.a = angle(C, E);
-			var	M = transform(C, E, $scope.preferences.stateRadius),
-				L = transform(E, C, 10),
-				Q = quadratic(M, L, 0, transition.a);
+			transition.M = transform(C, E, $scope.preferences.stateRadius);
+			transition.L = transform(E, C, 10);
+			transition.startState = $scope.activeState;
+			tab.transitions.push(transition);
+			$scope.activeState.startTransitions.push(transition);
+			$scope.drawTransition(transition);
+			$scope.activeTransition = transition;
+			$scope.transitionMode.start(transition.defs.firstElementChild.firstElementChild);
+		};
+
+		$scope.drawTransition = function (transition) {
+			var Q = quadratic(transition.M, transition.L, transition.h, transition.a);
 
 			var path = document.createElementNS(src, 'path');
 			path.setAttributes({
 				'id': transition.id + '-' + 'path',
-				'ng-attr-d': quadraticPath(M, Q[0], Q[1], Q[2], L),
+				'ng-attr-d': quadraticPath(transition.M, Q[0], Q[1], Q[2], transition.L),
 				'fill': 'none',
 				'ng-attr-stroke': '{{preferences.pathColor}}',
 				'ng-attr-stroke-width': '{{preferences.pathWidth}}px',
@@ -327,6 +341,7 @@
 				'startOffset': '50%',
 				'class': 'non-selectable'
 			});
+			textPath.innerHTML = transition.getString();
 
 			var text = document.createElementNS(src, 'text');
 			text.setAttributes({
@@ -353,19 +368,13 @@
 			});
 			use.transitionDraggable($scope);
 
-			transition.startState = $scope.activeState;
 			transition.defs = $compile(defs)($scope)[0];
 			transition.use = $compile(use)($scope)[0];
 			transition.textPath = transition.defs.firstElementChild.childNodes[1].firstElementChild;
-			tab.transitions.push(transition);
-			$scope.activeState.startTransitions.push(transition);
-
+			
 			var canvas = $scope.getCanvas();
 			canvas.appendChild(transition.defs);
 			canvas.appendChild(transition.use);
-
-			$scope.activeTransition = transition;
-			$scope.transitionMode.start(g.firstElementChild);
 		};
 
 		$scope.bindTransition = function (activeState) {
@@ -495,6 +504,118 @@
 				$scope.activeState.name = oldValue;
 		});
 
+		$scope.$watch('current', function (newValue, oldValue) {
+			if ($scope.tabs[newValue]) {
+				$rootScope.$emit('sendAutomatonName', $scope.tabs[newValue].title || $scope.translation.NEW_TAB + ' ' + $scope.tabs[newValue].index);
+			}
+		});
+
+		$rootScope.$on('drawAutomaton', function (event, automaton) {
+			var tab = $scope.tabs[$scope.current];
+			tab.clear();
+
+			var startStatePosition = { x: 100, y: 100 },
+				stateSpacing = { x: 200, y: 100 },
+				statePosition = { x: startStatePosition.x, y: startStatePosition.y };
+
+			for (var i in automaton.states) {
+				var state = new State(tab.index, ++tab.statesCount, automaton.states[i]);
+				state.start = state.name === automaton.start;
+				state.accept = automaton.accept.indexOf(state.name) != -1;
+				state.position = { x: statePosition.x, y: statePosition.y };
+				statePosition.x += stateSpacing.x;
+				if (i % 4 == 0) {
+					statePosition.y += stateSpacing.y;
+					statePosition.x = startStatePosition.x;
+				}
+				tab.states.push(state);
+				$scope.drawState(state);
+			}
+
+			for (var i in automaton.transitions) {
+				var transition = new Transition(tab.index, ++tab.transitionsCount);
+				transition.symbols = automaton.transitions[i].input;
+				transition.startState = tab.states.getByName(automaton.transitions[i].source);
+				transition.endState = tab.states.getByName(automaton.transitions[i].target);
+				var C = { x: parseFloat(transition.startState.use.getAttribute('x')), y: parseFloat(transition.startState.use.getAttribute('y')) };
+				var E = { x: parseFloat(transition.endState.use.getAttribute('x')), y: parseFloat(transition.endState.use.getAttribute('y')) };
+				transition.a = angle(C, E) || transition.a;
+				transition.M = transform(C, E, $scope.preferences.stateRadius);
+				transition.L = transform(E, transition.M, $scope.preferences.stateRadius + 10);
+				if (angular.equals(transition.startState, transition.endState)) {
+					transition.h = 100;
+					var Q = quadratic(transition.M, transition.L, transition.h, transition.a);
+					transition.M = transform(C, Q[0], $scope.preferences.stateRadius);
+					transition.L = transform(E, Q[2], $scope.preferences.stateRadius + 10);
+				}
+				transition.startState.startTransitions.push(transition);
+				transition.endState.endTransitions.push(transition);
+				tab.transitions.push(transition);
+				$scope.drawTransition(transition);
+			}
+		});
+
+		$rootScope.$on('drawFromFile', function (event, automaton) {
+			$scope.fromFile = automaton;
+			document.getElementById('draw').click();
+		});
+
+		$scope.drawFromFile = function (automaton) {
+			var tab = $scope.tabs[$scope.current];
+			tab.clear();
+
+			for (var i in automaton.states) {
+				var state = new State(tab.index, ++tab.statesCount, automaton.states[i].name);
+				state.start = state.name === automaton.start;
+				state.accept = automaton.accept.indexOf(state.name) != -1;
+				state.position = automaton.states[i].position;
+				tab.states.push(state);
+				$scope.drawState(state);
+			}
+
+			for (var i in automaton.transitions) {
+				var transition = new Transition(tab.index, ++tab.transitionsCount);
+				transition.symbols = automaton.transitions[i].input;
+				transition.startState = tab.states.getByName(automaton.transitions[i].source);
+				transition.endState = tab.states.getByName(automaton.transitions[i].target);
+				var C = { x: parseFloat(transition.startState.use.getAttribute('x')), y: parseFloat(transition.startState.use.getAttribute('y')) };
+				var E = { x: parseFloat(transition.endState.use.getAttribute('x')), y: parseFloat(transition.endState.use.getAttribute('y')) };
+				transition.h = automaton.transitions[i].height;
+				transition.a = angle(C, E) || transition.a;
+				transition.M = transform(C, E, $scope.preferences.stateRadius);
+				transition.L = transform(E, transition.M, $scope.preferences.stateRadius + 10);
+				var Q = quadratic(transition.M, transition.L, transition.h, transition.a);
+				transition.M = transform(C, Q[0], $scope.preferences.stateRadius);
+				transition.L = transform(E, Q[2], $scope.preferences.stateRadius + 10);
+				transition.startState.startTransitions.push(transition);
+				transition.endState.endTransitions.push(transition);
+				tab.transitions.push(transition);
+				$scope.drawTransition(transition);
+			}
+		};
+
+		$rootScope.$on('clearAutomaton', function (event) {
+			$scope.tabs[$scope.current].clear();
+		});
+
+		$rootScope.$on('translationChanged', function (event) {
+			$rootScope.$emit('sendAutomatonName', $scope.tabs[$scope.current].title || $scope.translation.NEW_TAB + ' ' + $scope.tabs[$scope.current].index);
+		});
+
+		$rootScope.$on('renameAutomaton', function (event, name) {
+			if (name !== $scope.translation.NEW_TAB + ' ' + $scope.tabs[$scope.current].index) {
+				$scope.tabs[$scope.current].title = name;
+			}
+		});
+
+		$rootScope.$on('serialize', function (event) {
+			fileIOSrvc.serialize($scope.tabs[$scope.current]);
+		});
+
+		$rootScope.$on('saveAsImage', function (event) {
+			fileIOSrvc.saveAsImage($scope.tabs[$scope.current].title || $scope.translation.NEW_TAB + ' ' + $scope.tabs[$scope.current].index);
+		});
+
 		function initPreferences(scope) {
 			scope.preferences = angular.copy($scope.preferences);
 			scope.$watch('preferences.stateNamePrefix', function (newValue, oldValue) {
@@ -504,14 +625,31 @@
 		}
 
 		function Tab(index) {
+			var that = this;
 			this.id = 'tab-' + index;
 			this.index = index;
+			this.title = null;
 			this.statesCount = 0;
 			this.transitionsCount = 0;
 			this.states = [];
 			this.transitions = [];
 			this.scale = 1.0;
 			this.transitionTable = new TransitionTable(this);
+			this.clear = function () {
+				var canvas = $scope.getCanvas();
+				for (var i in that.transitions) {
+					canvas.removeChild(that.transitions[i].use);
+					canvas.removeChild(that.transitions[i].defs);
+				}
+				for (var i in that.states) {
+					canvas.removeChild(that.states[i].use);
+					canvas.removeChild(that.states[i].defs);
+				}
+				that.states = [];
+				that.transitions = [];
+				that.statesCount = 0;
+				that.transitionsCount = 0;
+			};
 		}
 
 		function State(tabIndex, index, name) {
@@ -522,6 +660,7 @@
 			this.accept = false;
 			this.defs = null;
 			this.use = null;
+			this.position = null;
 			this.startTransitions = [];
 			this.endTransitions = [];
 		}
@@ -539,10 +678,11 @@
 			this.textPath = null;
 			this.h = 0;
 			this.a = 0;
+			this.M = null;
+			this.L = null;
 			this.getString = function () {
 				var s = '';
 				for (var i in that.symbols) {
-					if (typeof that.symbols[i] === 'function') continue;
 					s += i == 0 ? that.symbols[i] : ', ' + that.symbols[i];
 				}
 				return s;

@@ -1,5 +1,5 @@
 ﻿{
-  "NEW_TAB": "New tab",
+  "NEW_TAB": "Automaton",
   "CLOSE_TAB": "Close tab",
   "SCALE": "Scale",
   "REMOVE": "Remove",
@@ -31,5 +31,16 @@
   "RESTORE_DEFAULT_PREFERENCES": "Restore default preferences",
   "EMPTY": "Empty",
   "PREFERENCES_CONFIRM_TITLE": "Are you sure?",
-  "PREFERENCES_CONFIRM_MESSAGE": "All your preferences will be reset."
+  "PREFERENCES_CONFIRM_MESSAGE": "All your preferences will be reset.",
+  "CLEAR": "Clear",
+  "BUILD": "Build",
+  "RENAME": "Rename",
+  "FILE": "File",
+  "EDIT": "Edit",
+  "VIEW": "View",
+  "FORMAT": "Format",
+  "HELP": "Help",
+  "OPEN": "Open",
+  "SAVE_AS_FILE": "Save as file",
+  "SAVE_AS_IMAGE": "Save as image"
 }

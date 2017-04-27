@@ -1,8 +1,19 @@
-﻿<md-sidenav class="md-sidenav-left" md-is-locked-open="true" md-whiteframe="5">
+﻿<md-sidenav id="left-nav" class="md-sidenav-left" md-is-locked-open="true" md-whiteframe="5">
 	<md-content layout-padding>
 		<md-input-container class="md-block">
 			<label>{{translation.REGULAR_EXPRESSION}}</label>
-			<input>
+			<input ng-model="regexp">
 		</md-input-container>
+		<div class="button-group">
+			<md-button ng-click="build()">{{translation.BUILD}}</md-button>
+			<md-button ng-click="clear()">{{translation.CLEAR}}</md-button>
+		</div>
+		<md-input-container class="md-block">
+			<label>{{translation.NAME}}</label>
+			<input ng-model="automatonName">
+		</md-input-container>
+		<div class="button-group">
+			<md-button ng-click="rename()">{{translation.RENAME}}</md-button>
+		</div>
 	</md-content>
 </md-sidenav>
