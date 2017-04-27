@@ -2,6 +2,36 @@
 	<div class="md-toolbar-tools">
 		<span id="logo-caption" class="non-selectable md-hue-1">Visual Automaton</span>
 		<span id="version-number" class="non-selectable">{{version}}</span>
+		<md-menu>
+			<md-button ng-click="$mdOpenMenu()">{{translation.FILE}}</md-button>
+			<md-menu-content width="4">
+				<md-menu-item>
+					<md-button ng-click="open()">{{translation.OPEN}}</md-button>
+				</md-menu-item>
+				<md-menu-item>
+					<md-button ng-click="saveAsFile()">{{translation.SAVE_AS_FILE}}</md-button>
+				</md-menu-item>
+				<md-menu-item>
+					<md-button ng-click="saveAsImage()">{{translation.SAVE_AS_IMAGE}}</md-button>
+				</md-menu-item>
+			</md-menu-content>
+		</md-menu>
+		<md-menu>
+			<md-button ng-click="">{{translation.EDIT}}</md-button>
+			<md-menu-content></md-menu-content>
+		</md-menu>
+		<md-menu>
+			<md-button ng-click="">{{translation.VIEW}}</md-button>
+			<md-menu-content></md-menu-content>
+		</md-menu>
+		<md-menu>
+			<md-button ng-click="">{{translation.FORMAT}}</md-button>
+			<md-menu-content></md-menu-content>
+		</md-menu>
+		<md-menu>
+			<md-button ng-click="">{{translation.HELP}}</md-button>
+			<md-menu-content></md-menu-content>
+		</md-menu>
 		<span md-truncate flex class="md-hue-1"></span>
 		<md-button class="md-icon-button translation-btn" ng-class="{active: currentTranslation == 'en'}" ng-click="getTranslation('en')" title="English" aria-label="English">
 			<img src="assets/img/en.png" />
@@ -9,5 +39,7 @@
 		<md-button class="md-icon-button translation-btn" ng-class="{active: currentTranslation == 'uk'}" ng-click="getTranslation('uk')" title="Українська" aria-label="Ukrainian">
 			<img src="assets/img/uk.png" />
 		</md-button>
+		<a id="file-downloader" class="hidden" href="" download="" />
+		<input type="file" id="file-uploader" class="hidden" accept="application/json" onchange="angular.element(this).scope().uploadFile(event)" />
 	</div>
 </md-toolbar>

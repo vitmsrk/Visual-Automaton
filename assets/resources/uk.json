@@ -1,5 +1,5 @@
 ﻿{
-  "NEW_TAB": "Нова вкладка",
+  "NEW_TAB": "Автомат",
   "CLOSE_TAB": "Закрити вкладку",
   "SCALE": "Масштаб",
   "REMOVE": "Видалити",
@@ -31,5 +31,16 @@
   "RESTORE_DEFAULT_PREFERENCES": "Відновити стандартні налаштування",
   "EMPTY": "Пусто",
   "PREFERENCES_CONFIRM_TITLE": "Ви впевнені?",
-  "PREFERENCES_CONFIRM_MESSAGE": "Всі Ваші налаштування будуть скинуті."
+  "PREFERENCES_CONFIRM_MESSAGE": "Всі Ваші налаштування будуть скинуті.",
+  "CLEAR": "Очистити",
+  "BUILD": "Будувати",
+  "RENAME": "Перейменувати",
+  "FILE": "Файл",
+  "EDIT": "Правка",
+  "VIEW": "Вигляд",
+  "FORMAT": "Формат",
+  "HELP": "Довідка",
+  "OPEN": "Відкрити",
+  "SAVE_AS_FILE": "Зберегти як файл",
+  "SAVE_AS_IMAGE": "Зберегти як зображення"
 }

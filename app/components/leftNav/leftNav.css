@@ -1,2 +1,15 @@
-﻿body {
+﻿#left-nav md-input-container {
+    margin-bottom: 0;
+}
+
+#left-nav md-input-container label {
+    left: 8px;
+}
+
+#left-nav md-input-container .md-errors-spacer {
+    display: none;
+}
+
+#left-nav .button-group {
+    padding: 0;
 }
